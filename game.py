@@ -1,4 +1,5 @@
 import pygame
+from monster import Monster
 
 class Game():
     def __init__(self, window_size):
@@ -11,9 +12,13 @@ class Game():
 
         self.player = None    # Joueur
         self.platforms = None # Liste des plateformes
-        self.enemies = None   # Liste des ennemis
         self.power_ups = None # Liste des power-ups
 
+        self.all_monsters = pygame.sprite.Group()
+
+    def spawn_monster(self):
+        monster = Monster()
+        self.all_monsters.add(monster)
     def setup(self):
         """
         self.player = ...
