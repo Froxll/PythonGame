@@ -1,20 +1,41 @@
 import pygame
 
-class Game:
-    def __init__(self):
-        # Fenêtre du jeu
+class Game():
+    def __init__(self, window_size):
+        # Pygame initialization
+        pygame.init()
+        self.screen = pygame.display.set_mode(window_size)
+        self.clock = pygame.time.Clock()
+        self.dt = 0
+        self.isRunning = True
 
-        pygame.display.set_mode((800, 600))
-        pygame.display.set_caption("Caleste")
+        self.player = None    # Joueur
+        self.platforms = None # Liste des plateformes
+        self.enemies = None   # Liste des ennemis
+        self.power_ups = None # Liste des power-ups
+
+    def setup(self):
+        """
+        self.player = ...
+        self.platforms = ...
+        self.enemies = ...
+        self.power_ups = ...
+        """
+
 
     def run(self):
-        # Boucle qui permet de laisser la fenêtre affiché
-
-        running = True
-
-        while running:
+        while self.isRunning:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.isRunning = False
+
+            self.screen.fill("black")
+
+            # Mise à jour et rendu des entités
+
+            pygame.display.flip()
+            self.dt = self.clock.tick(60) / 1000
 
         pygame.quit()
+
+
