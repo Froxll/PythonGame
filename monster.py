@@ -1,5 +1,6 @@
 import pygame
 
+
 class Monster(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -7,5 +8,5 @@ class Monster(pygame.sprite.Sprite):
         self.health = 100
         self.max_health = 100
         self.attack = 5
-        # self.image = pygame.image.load('img/golem.png')
+        self.image = pygame.image.load('img/Golem/Walking/Golem_01_Walking_000.png')
         self.rect = self.image.get_rect()
