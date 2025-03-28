@@ -1,5 +1,5 @@
 import pygame
-from player import Player
+# from player import Player
 from monster import Monster
 
 
@@ -25,7 +25,7 @@ class Game():
 
     def setup(self):
 
-        self.player = Player(self.screen, 50)
+        # self.player = Player(self.screen, 50)
         """
         self.platforms = ...
         self.enemies = ...
@@ -54,9 +54,11 @@ class Game():
                 self.isRunning = False
 
     def update(self):
-        self.player.move()
+        # Mettre à jour tous les monstres avec le delta time (dt)
+        self.all_monsters.update(self.dt)
 
     def display(self):
         self.screen.fill("black")
-        self.player.draw()
+        self.all_monsters.draw(self.screen)
+        # self.player.draw()
         pygame.display.flip()
