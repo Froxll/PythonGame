@@ -14,6 +14,9 @@ class Game():
         self.enemies = None   # Liste des ennemis
         self.power_ups = None # Liste des power-ups
 
+        self.image = pygame.image.load('img/Map.jpg').convert()
+
+
     def setup(self):
         """
         self.player = ...
@@ -29,9 +32,11 @@ class Game():
                 if event.type == pygame.QUIT:
                     self.isRunning = False
 
-            self.screen.fill("black")
+            self.screen.blit(self.image, (0,0))
 
             # Mise à jour et rendu des entités
+
+
 
             pygame.display.flip()
             self.dt = self.clock.tick(60) / 1000
