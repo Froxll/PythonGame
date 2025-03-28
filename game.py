@@ -15,6 +15,10 @@ class Game():
         self.enemies = None   # Liste des ennemis
         self.power_ups = None # Liste des power-ups
 
+        # Test collision
+        self.area = pygame.Rect(300, 150, 300, 300)
+        self.area_color = "red"
+
     def setup(self):
 
         self.player = Player(self.screen, 50)
@@ -48,10 +52,17 @@ class Game():
 
     def update(self):
         self.player.move()
+        if self.area.colliderect(self.player.rect):
+            self.area_color = "blue"
+        else:
+            self.area_color = "red"
 
     def display(self):
         self.screen.fill("black")
+        pygame.draw.rect(self.screen, self.area_color, self.area)
         self.player.draw()
+
+
         pygame.display.flip()
 
 
