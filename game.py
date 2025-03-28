@@ -1,4 +1,5 @@
 import pygame
+from player import Player
 from monster import Monster
 
 
@@ -23,8 +24,9 @@ class Game():
         self.all_monsters.add(monster)
 
     def setup(self):
+
+        self.player = Player(self.screen, 50)
         """
-        self.player = ...
         self.platforms = ...
         self.enemies = ...
         self.power_ups = ...
@@ -32,15 +34,29 @@ class Game():
 
     def run(self):
         while self.isRunning:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.isRunning = False
+            # Structure du code : https://www.youtube.com/watch?v=N56R1V5XZBw&list=PLKeQQTikvsqkeJlhiE8mXwskOhXLKdl8m&index=3
+            # Gestion de l'évenement "Quit
+            self.handling_events()
 
-            self.screen.fill("black")
+            # Mise à jour des différents éléments
+            self.update()
 
-            # Mise à jour et rendu des entités
+            # Rendu des entités
+            self.display()
 
-            pygame.display.flip()
             self.dt = self.clock.tick(60) / 1000
 
         pygame.quit()
+
+    def handling_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.isRunning = False
+
+    def update(self):
+        self.player.move()
+
+    def display(self):
+        self.screen.fill("black")
+        self.player.draw()
+        pygame.display.flip()
