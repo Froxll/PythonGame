@@ -22,6 +22,7 @@ class Game():
 
         self.rect_list = []
         self.ladder_list = []
+        self.spades_list = []
 
         for obj in tmx_data.objects:
             if obj.name == "plateforme":
@@ -30,6 +31,9 @@ class Game():
             if obj.name == "echelle":
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.ladder_list.append(rect)
+            if obj.name == "piques":
+                rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                self.spades_list.append(rect)
 
         # Caméra temporaire Et1
         self.camera_x = 0
@@ -92,6 +96,10 @@ class Game():
         self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
+
+
+        # Caméra temporaire
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_f]:
             self.camera_x -= self.camera_speed * self.dt
@@ -109,11 +117,15 @@ class Game():
 
         for rect in self.rect_list:
             shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=4)
+            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=2)
 
         for rect in self.ladder_list:
             shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=4)
+            pygame.draw.rect(self.screen, (0, 255, 0), shifted_rect, width=2)
+
+        for rect in self.spades_list:
+            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
+            pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
         for monster in self.all_monsters:
             # Décaler la position du monstre selon la position de la caméra
