@@ -17,9 +17,9 @@ class Monster(pygame.sprite.Sprite):
         for i in range(18):
             img_path = f'img/Golem/Walking/Golem_01_Walking_{i:03d}.png'
             img = pygame.image.load(img_path)
-            self.images_normal.append(pygame.transform.scale(img, (100, 100)))
+            self.images_normal.append(pygame.transform.scale(img, (150, 150)))
             flipped_img = pygame.transform.flip(img, True, False)
-            self.images_flipped.append(pygame.transform.scale(flipped_img, (100, 100)))
+            self.images_flipped.append(pygame.transform.scale(flipped_img, (150, 150)))
 
         # Initialiser l'image du golem
         self.image = self.images_normal[0]  # Prendre la première image pour initialiser
@@ -33,12 +33,12 @@ class Monster(pygame.sprite.Sprite):
 
         # Direction et vitesse
         self.facing_right = True
-        self.speed = 2  
+        self.speed = 1
 
         # Animation
         self.current_image = 0
         self.time_since_last_update = 0
-        self.animation_speed = 0.1  
+        self.animation_speed = 0.2
 
     def update(self, dt):
     # Mise à jour de l'animation
