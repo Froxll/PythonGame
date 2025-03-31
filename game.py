@@ -89,26 +89,13 @@ class Game():
                 if event.key == pygame.K_SPACE and self.player.jump_count < 2 :
                     self.player.jump()
 
-                elif event.key == pygame.K_UP and self.check_ladder_collisions():
-                    self.player.climb()
-
     def update(self):
         self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
+        self.handle_camera_movements()
 
 
-        # Caméra temporaire
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_f]:
-            self.camera_x -= self.camera_speed * self.dt
-        if keys[pygame.K_h]:
-            self.camera_x += self.camera_speed * self.dt
-        if keys[pygame.K_t]:
-            self.camera_y -= self.camera_speed * self.dt
-        if keys[pygame.K_g]:
-            self.camera_y += self.camera_speed * self.dt
 
         self.all_monsters.update(self.dt)
 
@@ -168,9 +155,9 @@ class Game():
         if collision_index > -1:
             pressed = pygame.key.get_pressed()
             self.player.x_vel = 0
-            if pressed[pygame.K_UP]:
+            if pressed[pygame.K_UP] or pressed[pygame.K_z]:
                 self.player.climb("up")
-            elif pressed[pygame.K_DOWN]:
+            elif pressed[pygame.K_DOWN] or pressed[pygame.K_s]:
                 self.player.climb("down")
             else:
                 dx_left = abs(self.player.rect.right - self.ladder_list[collision_index].left)  # Distance au bord gauche de l'obstacle
@@ -183,3 +170,14 @@ class Game():
                 if min_dist == dy_top:
                     self.player.rect.bottom = self.ladder_list[collision_index].top  # Bloquer au sol
                     self.player.landed()
+
+    def handle_camera_movements(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_f]:
+            self.camera_x -= self.camera_speed * self.dt
+        if keys[pygame.K_h]:
+            self.camera_x += self.camera_speed * self.dt
+        if keys[pygame.K_t]:
+            self.camera_y -= self.camera_speed * self.dt
+        if keys[pygame.K_g]:
+            self.camera_y += self.camera_speed * self.dt

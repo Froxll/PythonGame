@@ -35,9 +35,9 @@ class Player():
             self.y_vel = 18
         pressed = pygame.key.get_pressed()
         self.x_vel = 0
-        if pressed[pygame.K_LEFT]:
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_q]:
             self.move_left()
-        elif pressed[pygame.K_RIGHT]:
+        elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
             self.move_right()
 
         self.rect.move_ip(self.x_vel, self.y_vel)
