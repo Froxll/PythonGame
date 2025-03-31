@@ -4,7 +4,7 @@ from player import Player
 from monster import Monster
 
 
-class Game():
+class Game:
     def __init__(self, window_size):
         # Pygame initialization
         pygame.init()
@@ -12,6 +12,8 @@ class Game():
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.isRunning = True
+        self.window_size_w = window_size[0]
+        self.window_size_h = window_size[1]
 
         self.player = None  # Joueur
         self.platforms = None  # Liste des plateformes
@@ -86,7 +88,7 @@ class Game():
                 self.isRunning = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and self.player.jump_count < 2 :
+                if event.key == pygame.K_SPACE and self.player.jump_count < 1 :
                     self.player.jump()
 
     def update(self):
@@ -172,12 +174,22 @@ class Game():
                     self.player.landed()
 
     def handle_camera_movements(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_f]:
-            self.camera_x -= self.camera_speed * self.dt
-        if keys[pygame.K_h]:
-            self.camera_x += self.camera_speed * self.dt
-        if keys[pygame.K_t]:
-            self.camera_y -= self.camera_speed * self.dt
-        if keys[pygame.K_g]:
-            self.camera_y += self.camera_speed * self.dt
+        env_width = 5744
+        env_height = 2160
+
+        self.camera_x = self.player.rect.x - self.window_size_w/2 + self.player.rect.width/2
+        self.camera_y = self.player.rect.y - self.window_size_h/2 + self.player.rect.height/2
+        if self.camera_x < 0:
+            self.camera_x = 0
+
+        if self.camera_y < 0:
+            self.camera_y = 0
+
+        if self.camera_x + self.window_size_w >= env_width:
+            self.camera_x = env_width - self.window_size_w
+
+        if self.camera_y + self.window_size_h >= env_height:
+            self.camera_y = env_height - self.window_size_h
+
+
+
