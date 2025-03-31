@@ -17,8 +17,6 @@ class Game():
         self.enemies = None   # Liste des ennemis
         self.power_ups = None # Liste des power-ups
 
-
-
         self.background = pygame.image.load("img/Map.png").convert()
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
@@ -91,8 +89,6 @@ class Game():
             self.camera_y += self.camera_speed * self.dt
 
     def display(self):
-        self.player.draw()
-
         self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
 
         for rect in self.rect_list:
@@ -102,9 +98,7 @@ class Game():
         for rect in self.ladder_list:
             shifted_rect = rect.move(-self.camera_x, -self.camera_y)
             pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=4)
-
-
-
+        self.player.draw()
 
         pygame.display.flip()
 

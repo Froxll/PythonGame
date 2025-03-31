@@ -13,7 +13,7 @@ class Player():
         self.image = pygame.transform.scale(self.image, new_size)
 
         #Variable de gestion de la position / Mouvement
-        self.rect = self.image.get_rect(x=0, y=0)
+        self.rect = self.image.get_rect(x=100, y=0)
 
         self.velocity = 5
         self.x_vel = 0
@@ -28,6 +28,7 @@ class Player():
         self.climb_speed = 5
 
         self.hp = max_health
+
     def move(self):
         self.y_vel += min(1, self.fall_count / 60)
         pressed = pygame.key.get_pressed()
