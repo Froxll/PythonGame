@@ -74,6 +74,6 @@
   <object id="91" name="plateforme" x="5740" y="725" width="4" height="536"/>
   <object id="92" name="plateforme" x="5458.67" y="440.833" width="286" height="283.5"/>
   <object id="93" name="plateforme" x="5738.78" y="0.60606" width="5.33333" height="440.182"/>
-  <object id="94" name="plateforme" x="2883.5" y="2013.5" width="113.5" height="54"/>
+  <object id="94" name="plateforme" x="2888" y="2013.5" width="108" height="54"/>
  </objectgroup>
 </map>
