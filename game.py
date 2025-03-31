@@ -28,11 +28,19 @@ class Game():
         self.window_width, self.window_height = window_size
 
         self.all_monsters = pygame.sprite.Group()
-        self.spawn_monster()
+        self.spawn_monsters()
 
-    def spawn_monster(self):
-        monster = Monster(1260, 1735, 1260, 1620)  # Spawn en x:1260 y:1735 et va de 1260 à 1620 en x
-        self.all_monsters.add(monster)
+    def spawn_monsters(self):
+        golem_positions = [
+            (1260, 1735, 1260, 1620),   # Spawn en x:1260 y:1735 et va de 1260 à 1620 en x
+            (3988, 1737, 3988, 4372),
+            (184, 84, 184, 568),
+            (2700, 1929, 2700, 2910),
+        ]
+
+        for pos in golem_positions:
+            monster = Monster(*pos)
+            self.all_monsters.add(monster)
 
     def setup(self):
 
