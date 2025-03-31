@@ -1,6 +1,7 @@
 import pygame
 import pytmx
 from player import Player
+from monster import Monster
 
 
 class Game():
@@ -12,10 +13,9 @@ class Game():
         self.dt = 0
         self.isRunning = True
 
-        self.player = None    # Joueur
-        self.platforms = None # Liste des plateformes
-        self.enemies = None   # Liste des ennemis
-        self.power_ups = None # Liste des power-ups
+        self.player = None  # Joueur
+        self.platforms = None  # Liste des plateformes
+        self.power_ups = None  # Liste des power-ups
 
         self.background = pygame.image.load("img/Map.png").convert()
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
@@ -35,6 +35,20 @@ class Game():
         self.camera_x = 0
         self.camera_y = 0
         self.camera_speed = 900
+        self.all_monsters = pygame.sprite.Group()
+        self.spawn_monsters()
+
+    def spawn_monsters(self):
+        golem_positions = [
+            (1260, 1735, 1260, 1620),  # Spawn en x:1260 y:1735 et va de 1260 à 1620 en x
+            (3988, 1737, 3988, 4372),
+            (184, 84, 184, 568),
+            (2700, 1929, 2700, 2910),
+        ]
+
+        for pos in golem_positions:
+            monster = Monster(*pos)
+            self.all_monsters.add(monster)
 
     def setup(self):
 
@@ -88,6 +102,8 @@ class Game():
         if keys[pygame.K_g]:
             self.camera_y += self.camera_speed * self.dt
 
+        self.all_monsters.update(self.dt)
+
     def display(self):
         self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
 
@@ -98,6 +114,12 @@ class Game():
         for rect in self.ladder_list:
             shifted_rect = rect.move(-self.camera_x, -self.camera_y)
             pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=4)
+
+        for monster in self.all_monsters:
+            # Décaler la position du monstre selon la position de la caméra
+            display_x = monster.rect.x - self.camera_x
+            display_y = monster.rect.y - self.camera_y
+            self.screen.blit(monster.image, (display_x, display_y)
         self.player.draw()
 
         pygame.display.flip()
