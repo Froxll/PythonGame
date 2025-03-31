@@ -119,7 +119,7 @@ class Game():
             # Décaler la position du monstre selon la position de la caméra
             display_x = monster.rect.x - self.camera_x
             display_y = monster.rect.y - self.camera_y
-            self.screen.blit(monster.image, (display_x, display_y)
+            self.screen.blit(monster.image, (display_x, display_y))
         self.player.draw()
 
         pygame.display.flip()
