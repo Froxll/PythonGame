@@ -15,7 +15,7 @@ class Player():
         #Variable de gestion de la position / Mouvement
         self.rect = self.image.get_rect(x=0, y=0)
 
-        self.velocity = 3
+        self.velocity = 5
         self.x_vel = 0
         self.y_vel = 0
         self.direction = "right"
@@ -23,6 +23,9 @@ class Player():
 
         self.jump_count = 0
         self.jump_speed = 10
+        self.side_hit_count = 0
+
+        self.climb_speed = 5
 
         self.hp = max_health
     def move(self):
@@ -45,9 +48,6 @@ class Player():
         elif self.direction == "right":
             self.screen.blit(self.image, self.rect)
 
-
-
-
     def move_left(self):
         self.x_vel = -self.velocity
         if self.direction != "left":
@@ -64,8 +64,24 @@ class Player():
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
+        self.side_hit_count = 0
 
     def jump(self):
         self.y_vel = -1 * self.jump_speed
         self.jump_count += 1
+        if self.jump_count == 2:
+            self.fall_count = 0
 
+    def hit_side(self):
+        self.fall_count = 0
+        self.y_vel = 0
+        self.side_hit_count += 1
+        if self.side_hit_count == 1:
+            self.jump_count = 0
+
+    def climb(self, climb_type):
+        self.fall_count = 0
+        if climb_type == "up":
+            self.y_vel = -1 * self.climb_speed
+        elif climb_type == "down":
+            self.y_vel = self.climb_speed
