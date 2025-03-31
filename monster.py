@@ -1,4 +1,5 @@
 import pygame
+import random
 
 
 class Monster(pygame.sprite.Sprite):
@@ -39,16 +40,32 @@ class Monster(pygame.sprite.Sprite):
         self.time_since_last_update = 0
         self.animation_speed = 0.1
 
+        #Pause
+        self.is_stopped = False  # Indique si le golem est à l'arrêt
+        self.stop_timer = 0  # Temps restant d'arrêt
+        self.next_stop_time = random.uniform(2, 5)  # Prochaine pause dans 2 à 5 sec
+
     def update(self, dt):
         # Mise à jour de l'animation
         self.time_since_last_update += dt
-        if self.time_since_last_update >= self.animation_speed:
+        self.next_stop_time -= dt
+
+        if not self.is_stopped and self.time_since_last_update >= self.animation_speed:
             self.time_since_last_update = 0
             self.current_image = (self.current_image + 1) % len(self.images_normal)
-            if self.facing_right:
-                self.image = self.images_normal[self.current_image]
-            else:
-                self.image = self.images_flipped[self.current_image]
+            self.image = self.images_normal[self.current_image] if self.facing_right else self.images_flipped[
+                self.current_image]
+
+        if self.next_stop_time <= 0 and not self.is_stopped:
+            self.is_stopped = True
+            self.stop_timer = 1
+
+        if self.is_stopped:
+            self.stop_timer -= dt
+            if self.stop_timer <= 0:
+                self.is_stopped = False
+                self.next_stop_time = random.uniform(2, 5)
+            return  # On sort de update pour ne pas déplacer le golem pendant la pause
 
         # Déplacement du monstre à droite ou à gauche
         if self.facing_right:

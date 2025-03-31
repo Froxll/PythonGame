@@ -31,7 +31,7 @@ class Game():
         self.spawn_monster()
 
     def spawn_monster(self):
-        monster = Monster(1260, 1735, 1260, 1620)  # Spawn en 200 / 300 et va de 200 à 400 en x
+        monster = Monster(1260, 1735, 1260, 1620)  # Spawn en x:1260 y:1735 et va de 1260 à 1620 en x
         self.all_monsters.add(monster)
 
     def setup(self):
