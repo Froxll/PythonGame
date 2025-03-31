@@ -120,7 +120,8 @@ class Game():
             display_x = monster.rect.x - self.camera_x
             display_y = monster.rect.y - self.camera_y
             self.screen.blit(monster.image, (display_x, display_y))
-        self.player.draw()
+
+        self.player.draw(self.camera_x, self.camera_y)
 
         pygame.display.flip()
 

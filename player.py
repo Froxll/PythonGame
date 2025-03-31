@@ -31,6 +31,8 @@ class Player():
 
     def move(self):
         self.y_vel += min(1, self.fall_count / 60)
+        if self.y_vel > 18:
+            self.y_vel = 18
         pressed = pygame.key.get_pressed()
         self.x_vel = 0
         if pressed[pygame.K_LEFT]:
@@ -41,13 +43,15 @@ class Player():
         self.rect.move_ip(self.x_vel, self.y_vel)
         self.fall_count += 1
 
-    def draw(self):
+    def draw(self, camera_x, camera_y):
+        display_x = self.rect.x - camera_x
+        display_y = self.rect.y - camera_y
         if self.direction == "left":
             # On retourne l'image en mirroir
             image_flipped = pygame.transform.flip(self.image, True, False)
-            self.screen.blit(image_flipped, self.rect)
+            self.screen.blit(image_flipped, (display_x, display_y))
         elif self.direction == "right":
-            self.screen.blit(self.image, self.rect)
+            self.screen.blit(self.image, (display_x, display_y))
 
     def move_left(self):
         self.x_vel = -self.velocity
