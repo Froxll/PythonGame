@@ -4,20 +4,19 @@ from player import Player
 from monster import Monster
 
 
-class Game():
+class Game:
     def __init__(self, window_size):
         # Pygame initialization
-        pygame.init()
+        # pygame.init()
         self.screen = pygame.display.set_mode(window_size)
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.isRunning = True
 
         self.player = None  # Joueur
-        self.platforms = None  # Liste des plateformes
-        self.power_ups = None  # Liste des power-ups
 
-        self.background = pygame.image.load("img/Map.png").convert()
+        self.background = pygame.image.load("img/Background.png").convert()
+        self.map = pygame.image.load("img/Map.png").convert_alpha()
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
         self.rect_list = []
@@ -68,8 +67,9 @@ class Game():
         while self.isRunning:
             # Structure du code : https://www.youtube.com/watch?v=N56R1V5XZBw&list=PLKeQQTikvsqkeJlhiE8mXwskOhXLKdl8m&index=3
             # Gestion de l'évenement "Quit
-            self.handling_events()
-
+            state = self.handling_events()
+            if state == "EXIT":
+                return state
             # Mise à jour des différents éléments
             self.update()
 
@@ -84,13 +84,12 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.isRunning = False
+                return "EXIT"
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 2 :
                     self.player.jump()
 
-                elif event.key == pygame.K_UP and self.check_ladder_collisions():
-                    self.player.climb()
 
     def update(self):
         self.player.move()
@@ -114,6 +113,7 @@ class Game():
 
     def display(self):
         self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
+        self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
         for rect in self.rect_list:
             shifted_rect = rect.move(-self.camera_x, -self.camera_y)

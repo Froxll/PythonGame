@@ -22,7 +22,7 @@ class Player():
         self.fall_count = 0
 
         self.jump_count = 0
-        self.jump_speed = 10
+        self.jump_speed = 12
         self.side_hit_count = 0
 
         self.climb_speed = 5
