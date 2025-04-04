@@ -26,6 +26,7 @@ class Game:
         self.ladder_list = []
         self.spades_list = []
 
+        # Placement des rect de collision
         for obj in tmx_data.objects:
             if obj.name == "plateforme":
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
@@ -37,10 +38,10 @@ class Game:
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.spades_list.append(rect)
 
-        # Caméra temporaire Et1
+        # Caméra
         self.camera_x = 0
         self.camera_y = 0
-        self.camera_speed = 900
+
         self.all_monsters = pygame.sprite.Group()
         self.spawn_monsters()
 
@@ -123,37 +124,46 @@ class Game:
             self.screen.blit(monster.image, (display_x, display_y))
 
         self.player.draw(self.camera_x, self.camera_y)
+        display_x = self.player.display_rect.x - self.camera_x
+        display_y = self.player.display_rect.y - self.camera_y
+        shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
+        pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
+
+        display_x = self.player.hit_box.x - self.camera_x
+        display_y = self.player.hit_box.y - self.camera_y
+        shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
+        pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
 
         pygame.display.flip()
 
     def check_rect_collisions(self):
-        collision_index = self.player.rect.collidelist(self.rect_list)
+        collision_index = self.player.hit_box.collidelist(self.rect_list)
         if  collision_index > -1:
             # J'ai essayé d'implémenter quelque chose mais ChatGPT a corrigé en me donnant cette version
             # Calculer les distances entre les bords du joueur et du rectangle touché
-            dx_left = abs(self.player.rect.right - self.rect_list[collision_index].left)  # Distance au bord gauche de l'obstacle
-            dx_right = abs(self.player.rect.left - self.rect_list[collision_index].right)  # Distance au bord droit de l'obstacle
-            dy_top = abs(self.player.rect.bottom - self.rect_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
-            dy_bottom = abs(self.player.rect.top - self.rect_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
+            dx_left = abs(self.player.hit_box.right - self.rect_list[collision_index].left)  # Distance au bord gauche de l'obstacle
+            dx_right = abs(self.player.hit_box.left - self.rect_list[collision_index].right)  # Distance au bord droit de l'obstacle
+            dy_top = abs(self.player.hit_box.bottom - self.rect_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
+            dy_bottom = abs(self.player.hit_box.top - self.rect_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
 
             # Trouver le côté où la collision est la plus "profonde" (le plus petit décalage)
             min_dist = min(dx_left, dx_right, dy_top, dy_bottom)
 
             if min_dist == dx_left:
-                self.player.rect.right = self.rect_list[collision_index].left  # Bloquer à gauche
+                self.player.hit_box.right = self.rect_list[collision_index].left  # Bloquer à gauche
                 self.player.hit_side()
             elif min_dist == dx_right:
-                self.player.rect.left = self.rect_list[collision_index].right  # Bloquer à droite
+                self.player.hit_box.left = self.rect_list[collision_index].right  # Bloquer à droite
                 self.player.hit_side()
             elif min_dist == dy_top:
-                self.player.rect.bottom = self.rect_list[collision_index].top  # Bloquer au sol
+                self.player.hit_box.bottom = self.rect_list[collision_index].top  # Bloquer au sol
                 self.player.landed()
             elif min_dist == dy_bottom:
-                self.player.rect.top = self.rect_list[collision_index].bottom  # Bloquer en haut (tête du joueur)
+                self.player.hit_box.top = self.rect_list[collision_index].bottom  # Bloquer en haut (tête du joueur)
                 self.player.y_vel *= -1
 
     def check_ladder_collisions(self):
-        collision_index = self.player.rect.collidelist(self.ladder_list)
+        collision_index = self.player.hit_box.collidelist(self.ladder_list)
         if collision_index > -1:
             pressed = pygame.key.get_pressed()
             self.player.x_vel = 0
@@ -162,23 +172,23 @@ class Game:
             elif pressed[pygame.K_DOWN] or pressed[pygame.K_s]:
                 self.player.climb("down")
             else:
-                dx_left = abs(self.player.rect.right - self.ladder_list[collision_index].left)  # Distance au bord gauche de l'obstacle
-                dx_right = abs(self.player.rect.left - self.ladder_list[collision_index].right)  # Distance au bord droit de l'obstacle
-                dy_top = abs(self.player.rect.bottom - self.ladder_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
-                dy_bottom = abs(self.player.rect.top - self.ladder_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
+                dx_left = abs(self.player.hit_box.right - self.ladder_list[collision_index].left)  # Distance au bord gauche de l'obstacle
+                dx_right = abs(self.player.hit_box.left - self.ladder_list[collision_index].right)  # Distance au bord droit de l'obstacle
+                dy_top = abs(self.player.hit_box.bottom - self.ladder_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
+                dy_bottom = abs(self.player.hit_box.top - self.ladder_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
 
                 # Trouver le côté où la collision est la plus "profonde" (le plus petit décalage)
                 min_dist = min(dx_left, dx_right, dy_top, dy_bottom)
                 if min_dist == dy_top:
-                    self.player.rect.bottom = self.ladder_list[collision_index].top  # Bloquer au sol
+                    self.player.hit_box.bottom = self.ladder_list[collision_index].top  # Bloquer au sol
                     self.player.landed()
 
     def handle_camera_movements(self):
         env_width = 5744
         env_height = 2160
 
-        self.camera_x = self.player.rect.x - self.window_size_w/2 + self.player.rect.width/2
-        self.camera_y = self.player.rect.y - self.window_size_h/2 + self.player.rect.height/2
+        self.camera_x = self.player.display_rect.x - self.window_size_w / 2 + self.player.display_rect.width / 2
+        self.camera_y = self.player.display_rect.y - self.window_size_h / 2 + self.player.display_rect.height / 2
         if self.camera_x < 0:
             self.camera_x = 0
 

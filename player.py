@@ -14,27 +14,34 @@ class Player:
         # Appel de la fonction de chargement des images
         self.load_sprites()
 
-        self.image = self.images["run"][0]
-        new_size = (self.image.get_width() * 3, self.image.get_height() * 3)  # Diviser la taille par 2
-        self.image = pygame.transform.scale(self.image, new_size)
-
         #Variable de gestion de la position / Mouvement
-        self.rect = self.image.get_rect(x=200, y=1995)
+        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        self.hit_box = self.display_rect.copy()
+        self.hit_box_reduction = 76
+        self.hit_box.width -= self.hit_box_reduction
+        self.hit_box.x = self.display_rect.x + self.hit_box.width / 2 - 6
+        self.hit_box.y = self.display_rect.y
 
+        # Gestion des déplacements
         self.velocity = 5
         self.x_vel = 0
         self.y_vel = 0
-        self.direction = "right"
         self.fall_count = 0
-
         self.jump_count = 0
         self.jump_speed = 12
         self.side_hit_count = 0
-
         self.climb_speed = 5
 
         self.hp = max_health
 
+        # Gestion des animations
+        self.direction = "right"
+        self.move_type = "run" # Prend la valeur d'une clé du dict des images
+        self.animation_count = 0
+        self.frame_count = 0 # Compteur de frame pour changer l'image seulement toute les 5 frame
+        self.frame_per_animation = 6
+
+        # Debug
 
 
     def move(self):
@@ -48,30 +55,47 @@ class Player:
         elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
             self.move_right()
 
-        self.rect.move_ip(self.x_vel, self.y_vel)
+        self.hit_box.move_ip(self.x_vel, self.y_vel)
+        #self.display_rect.move_ip(self.x_vel, self.y_vel)
         self.fall_count += 1
 
+
+
+
     def draw(self, camera_x, camera_y):
-        display_x = self.rect.x - camera_x
-        display_y = self.rect.y - camera_y
+        display_x = self.display_rect.x - camera_x
+        display_y = self.display_rect.y - camera_y
+
+        self.check_idle()
+        self.handle_animation()
+        """
+        self.hit_box.x = self.display_rect.x + self.hit_box.width / 2 - 6
+        self.hit_box.y = self.display_rect.y
+        """
+        self.display_rect.x = self.hit_box.x - self.hit_box.width / 2 + 6
+        self.display_rect.y = self.hit_box.y
+
         if self.direction == "left":
             # On retourne l'image en mirroir
-            image_flipped = pygame.transform.flip(self.image, True, False)
+            image_flipped = pygame.transform.flip(self.images[self.move_type][self.animation_count], True, False)
             self.screen.blit(image_flipped, (display_x, display_y))
         elif self.direction == "right":
-            self.screen.blit(self.image, (display_x, display_y))
+            self.screen.blit(self.images[self.move_type][self.animation_count], (display_x, display_y))
+
 
     def move_left(self):
         self.x_vel = -self.velocity
         if self.direction != "left":
             self.direction = "left"
-            #self.animation_count = 0
+
+        self.handle_move_type("run")
 
     def move_right(self):
         self.x_vel = self.velocity
         if self.direction != "right":
             self.direction = "right"
-            # self.animation_count = 0
+
+        self.handle_move_type("run")
 
     def landed(self):
         self.fall_count = 0
@@ -83,12 +107,16 @@ class Player:
         self.y_vel = -1 * self.jump_speed
         self.jump_count += 1
 
+        self.handle_move_type("jump")
+
     def hit_side(self):
-        self.fall_count = 0
+        self.fall_count += 1
         if self.side_hit_count == 0:
             self.jump_count = 0
+            self.fall_count = 0
         self.side_hit_count += 1
-        self.y_vel = self.side_hit_count / 10
+
+        self.handle_move_type("grab")
 
 
     def climb(self, climb_type):
@@ -98,10 +126,28 @@ class Player:
         elif climb_type == "down":
             self.y_vel = self.climb_speed
 
+        self.handle_move_type("grab")
+
+    def handle_animation(self):
+        self.frame_count += 1
+        if self.frame_count % self.frame_per_animation == 0:
+            self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
+
+    def check_idle(self):
+        if self.x_vel == 0 and self.y_vel < 1:
+            if self.move_type != "idle":
+                self.move_type = "idle"
+                self.animation_count = 0
+
+    def handle_move_type(self, new_move_type):
+        if new_move_type != self.move_type:
+            self.move_type = new_move_type
+            self.animation_count = 0
+
     def load_sprites(self):
         # Création du dict par clés
         self.images = {
-            "attack": [[], [], []],
+            "attack": [],
             "climb": [],
             "die": [],
             "fall": [],
@@ -112,9 +158,7 @@ class Player:
             "run": [],
         }
         # Création des images dossiers par dossiers
-        load_images_folder(self.images["attack"][0], "attack/1")
-        load_images_folder(self.images["attack"][1], "attack/2")
-        load_images_folder(self.images["attack"][2], "attack/3")
+        load_images_folder(self.images["attack"], "attack")
         load_images_folder(self.images["climb"], "climb")
         load_images_folder(self.images["die"], "die")
         load_images_folder(self.images["fall"], "fall")
@@ -129,4 +173,6 @@ def load_images_folder(images_list, path):
     for img_name in sorted(os.listdir(folder_path)):
         img_path = os.path.join(folder_path, img_name)
         image = pygame.image.load(img_path).convert_alpha()
+        new_size = (image.get_width() * 3, image.get_height() * 3)  # Augmenter la taille de l'image du personnage (très petite)
+        image = pygame.transform.scale(image, new_size)
         images_list.append(image)
