@@ -4,7 +4,7 @@ from player import Player
 from monster import Monster
 
 
-class Game():
+class Game:
     def __init__(self, window_size):
         # Pygame initialization
         pygame.init()
@@ -16,6 +16,15 @@ class Game():
         self.player = None  # Joueur
         self.platforms = None  # Liste des plateformes
         self.power_ups = None  # Liste des power-ups
+
+        self.heart_full = pygame.image.load("img/Lifebar/Full_Heart.png")
+        self.heart_mid = pygame.image.load("img/Lifebar/Mid_Heart.png")
+        self.heart_empty = pygame.image.load("img/Lifebar/Empty_Heart.png")
+
+        heart_size = (50, 44)
+        self.heart_full = pygame.transform.scale(self.heart_full, heart_size)
+        self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
+        self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
 
         self.background = pygame.image.load("img/Map.png").convert()
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
@@ -97,9 +106,6 @@ class Game():
         self.check_rect_collisions()
         self.check_ladder_collisions()
 
-
-        # Caméra temporaire
-
         keys = pygame.key.get_pressed()
         if keys[pygame.K_f]:
             self.camera_x -= self.camera_speed * self.dt
@@ -110,7 +116,14 @@ class Game():
         if keys[pygame.K_g]:
             self.camera_y += self.camera_speed * self.dt
 
-        self.all_monsters.update(self.dt)
+        self.all_monsters.update(self.dt, self.player.rect.centerx)
+
+        for monster in self.all_monsters:
+            if self.player.rect.colliderect(monster.rect):
+                if monster.state != "attack":
+                    monster.state = "attack"
+                    monster.current_image = 0
+                    monster.time_since_last_update = 0
 
     def display(self):
         self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
@@ -128,12 +141,18 @@ class Game():
             pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
         for monster in self.all_monsters:
-            # Décaler la position du monstre selon la position de la caméra
             display_x = monster.rect.x - self.camera_x
             display_y = monster.rect.y - self.camera_y
             self.screen.blit(monster.image, (display_x, display_y))
 
+            pygame.draw.rect(self.screen, (255, 0, 0), monster.rect.move(-self.camera_x, -self.camera_y), 2)
+            pygame.draw.rect(self.screen, (0, 0, 255), monster.hitbox.move(-self.camera_x, -self.camera_y), 2)
+
         self.player.draw(self.camera_x, self.camera_y)
+        pygame.draw.rect(self.screen, (0, 255, 0), self.player.rect.move(-self.camera_x, -self.camera_y), 2)
+
+        for i in range(3):
+            self.screen.blit(self.heart_full, (10 + i * 60, 10))
 
         pygame.display.flip()
 
