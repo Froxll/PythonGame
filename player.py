@@ -1,12 +1,14 @@
 import pygame
 import os
 
+from numpy.ma.core import true_divide
+
 
 # Utilisation de la vidéo : https://youtu.be/B6DrRN5z_uU?si=vNqB4-23R81IHm74
 # Création du personnage / gestion des déplacements
 
 class Player:
-    def __init__(self, screen, max_health):
+    def __init__(self, screen):
         # Variable d'affichage du Joueur
         self.screen = screen
 
@@ -17,22 +19,25 @@ class Player:
         #Variable de gestion de la position / Mouvement
         self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
         self.hit_box = self.display_rect.copy()
-        self.hit_box_reduction = 76
+        self.hit_box_reduction = 94
+        self.hit_box_offset = 18
         self.hit_box.width -= self.hit_box_reduction
-        self.hit_box.x = self.display_rect.x + self.hit_box.width / 2 - 6
+        self.hit_box.x = self.display_rect.x + self.hit_box.width / 2
         self.hit_box.y = self.display_rect.y
 
         # Gestion des déplacements
-        self.velocity = 5
+        self.velocity = 7
         self.x_vel = 0
         self.y_vel = 0
         self.fall_count = 0
         self.jump_count = 0
-        self.jump_speed = 12
+        self.jump_speed = 11
         self.side_hit_count = 0
         self.climb_speed = 5
 
-        self.hp = max_health
+        # Stats de jeu
+        self.hp = 100
+        self.damage = 25
 
         # Gestion des animations
         self.direction = "right"
@@ -40,6 +45,8 @@ class Player:
         self.animation_count = 0
         self.frame_count = 0 # Compteur de frame pour changer l'image seulement toute les 5 frame
         self.frame_per_animation = 6
+        self.is_jumping = False
+
 
         # Debug
 
@@ -56,7 +63,6 @@ class Player:
             self.move_right()
 
         self.hit_box.move_ip(self.x_vel, self.y_vel)
-        #self.display_rect.move_ip(self.x_vel, self.y_vel)
         self.fall_count += 1
 
 
@@ -68,19 +74,29 @@ class Player:
 
         self.check_idle()
         self.handle_animation()
-        """
-        self.hit_box.x = self.display_rect.x + self.hit_box.width / 2 - 6
-        self.hit_box.y = self.display_rect.y
-        """
-        self.display_rect.x = self.hit_box.x - self.hit_box.width / 2 + 6
+        self.display_rect.x = self.hit_box.x - self.hit_box.width / 2 - self.hit_box_offset
         self.display_rect.y = self.hit_box.y
 
-        if self.direction == "left":
-            # On retourne l'image en mirroir
-            image_flipped = pygame.transform.flip(self.images[self.move_type][self.animation_count], True, False)
-            self.screen.blit(image_flipped, (display_x, display_y))
-        elif self.direction == "right":
-            self.screen.blit(self.images[self.move_type][self.animation_count], (display_x, display_y))
+        if self.is_jumping and self.animation_count < len(self.images["jump"]) and self.y_vel < 0:
+            if self.direction == "left":
+                image_flipped = pygame.transform.flip(self.images["jump"][self.animation_count], True, False)
+                self.screen.blit(image_flipped, (display_x, display_y))
+            elif self.direction == "right":
+                self.screen.blit(self.images["jump"][self.animation_count], (display_x, display_y))
+        elif self.y_vel > 1:
+            self.handle_move_type("fall")
+            if self.direction == "left":
+                image_flipped = pygame.transform.flip(self.images[self.move_type][self.animation_count], True, False)
+                self.screen.blit(image_flipped, (display_x, display_y))
+            elif self.direction == "right":
+                self.screen.blit(self.images[self.move_type][self.animation_count], (display_x, display_y))
+        else:
+            if self.direction == "left":
+                # On retourne l'image en mirroir
+                image_flipped = pygame.transform.flip(self.images[self.move_type][self.animation_count], True, False)
+                self.screen.blit(image_flipped, (display_x, display_y))
+            elif self.direction == "right":
+                self.screen.blit(self.images[self.move_type][self.animation_count], (display_x, display_y))
 
 
     def move_left(self):
@@ -102,18 +118,20 @@ class Player:
         self.y_vel = 0
         self.jump_count = 0
         self.side_hit_count = 0
+        self.is_jumping = False
 
     def jump(self):
         self.y_vel = -1 * self.jump_speed
         self.jump_count += 1
 
         self.handle_move_type("jump")
+        self.is_jumping = True
 
     def hit_side(self):
-        self.fall_count += 1
+        self.fall_count = 0
+        self.y_vel = 0
         if self.side_hit_count == 0:
             self.jump_count = 0
-            self.fall_count = 0
         self.side_hit_count += 1
 
         self.handle_move_type("grab")
@@ -126,15 +144,16 @@ class Player:
         elif climb_type == "down":
             self.y_vel = self.climb_speed
 
-        self.handle_move_type("grab")
+        self.handle_move_type("climb")
 
     def handle_animation(self):
         self.frame_count += 1
         if self.frame_count % self.frame_per_animation == 0:
             self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
 
+
     def check_idle(self):
-        if self.x_vel == 0 and self.y_vel < 1:
+        if self.x_vel == 0 and self.y_vel < 1 and self.move_type != "climb" and self.move_type != "attack":
             if self.move_type != "idle":
                 self.move_type = "idle"
                 self.animation_count = 0
