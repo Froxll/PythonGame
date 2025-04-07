@@ -1,5 +1,4 @@
 import sys
-
 import pygame
 import math
 import pytmx
@@ -63,6 +62,12 @@ class Game:
 
         self.all_monsters = pygame.sprite.Group()
         self.spawn_monsters()
+        self.monsters_rect_list = []
+
+        self.time_since_last_player_attack = 0
+
+        for monster in self.all_monsters:
+            self.monsters_rect_list.append(monster.rect)
 
         # Initialisation des images pour le Game Over
         self.game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
@@ -88,7 +93,7 @@ class Game:
 
     def setup(self):
 
-        self.player = Player(self.screen, 50)
+        self.player = Player(self.screen)
         """
         self.platforms = ...
         self.enemies = ...
@@ -120,8 +125,10 @@ class Game:
                 return "EXIT"
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and self.player.jump_count < 1 :
+                if event.key == pygame.K_SPACE and self.player.jump_count < 1 and self.player.hp > 0:
                     self.player.jump()
+                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]):
+                    self.handle_player_attack()
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
 
@@ -142,6 +149,7 @@ class Game:
 
 
         self.all_monsters.update(self.dt)
+        self.time_since_last_player_attack += 1
 
     def display(self):
 
@@ -169,20 +177,23 @@ class Game:
 
         for monster in self.all_monsters:
             # Décaler la position du monstre selon la position de la caméra
-            display_x = monster.rect.x - self.camera_x
-            display_y = monster.rect.y - self.camera_y
-            self.screen.blit(monster.image, (display_x, display_y))
+            if monster.health > 0:
+                display_x = monster.rect.x - self.camera_x
+                display_y = monster.rect.y - self.camera_y
+                self.screen.blit(monster.image, (display_x, display_y))
 
         self.player.draw(self.camera_x, self.camera_y)
+
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
         pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-
+        """
         display_x = self.player.hit_box.x - self.camera_x
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
+        """
 
         if self.is_game_over:
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
@@ -253,7 +264,7 @@ class Game:
                     self.player.landed()
 
     def handle_camera_movements(self):
-        env_width = 5744
+        env_width = 5755
         env_height = 2160
 
         self.camera_x = self.player.display_rect.x - self.window_size_w / 2 + self.player.display_rect.width / 2
@@ -270,5 +281,14 @@ class Game:
         if self.camera_y + self.window_size_h >= env_height:
             self.camera_y = env_height - self.window_size_h
 
+    def handle_player_attack(self):
+        self.player.handle_move_type("attack")
+        self.time_since_last_player_attack = 0
+        collision_index = self.player.display_rect.collidelist(self.monsters_rect_list)
+        if collision_index > -1:
+            if self.all_monsters.sprites()[collision_index].health > 0:
+                self.all_monsters.sprites()[collision_index].health -= self.player.damage
 
+            if self.all_monsters.sprites()[collision_index].health <= 0:
+                self.all_monsters.sprites()[collision_index].health = 0
 
