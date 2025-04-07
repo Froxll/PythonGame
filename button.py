@@ -1,6 +1,5 @@
 import pygame
 import sys
-from game import Game
 
 ###################
 # Ressources
@@ -18,7 +17,9 @@ class Button:
         self.type_button = type_button
         self.state_hover = state_hover
 
+        self.pressed = False
         self.is_clicked = False
+        self.press_time = 0
 
         self.base_scale = base_scale
         self.hover_scale = hover_scale
@@ -44,13 +45,20 @@ class Button:
                     sys.exit()
                 if self.type_button == "start":
                     self.is_clicked = True
+
         else:
             self.target_scale = self.base_scale
 
-        if abs(self.current_scale - self.target_scale) > 0.01:
+        if abs(self.current_scale - self.target_scale) > 0.01 and self.state_hover:
             self.current_scale += (self.target_scale - self.current_scale) * self.scale_speed
             self.image = self.get_scaled_image(self.current_scale)
             self.rect = self.image.get_rect(center=(self.x, self.y))
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
+
+    def set_image(self, new_image):
+        self.original_image = new_image
+        self.base_size = new_image.get_size()
+        self.image = self.get_scaled_image(self.current_scale)
+        self.rect = self.image.get_rect(center=(self.x, self.y))

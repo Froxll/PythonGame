@@ -1,23 +1,43 @@
+import sys
+
 import pygame
+import math
 import pytmx
+from pygame import mixer
 from player import Player
 from monster import Monster
+from button import Button
 
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+FPS = 60
 
 class Game:
     def __init__(self, window_size):
-        # Pygame initialization
-        # pygame.init()
+        # Initialisation Son Game Over
+        mixer.init()
+        mixer.music.load('audio/Sound_Game_Over.mp3')
+        mixer.music.set_volume(0.8)
+        self.music_launched = False
+
         self.screen = pygame.display.set_mode(window_size)
         self.clock = pygame.time.Clock()
         self.dt = 0
+
         self.isRunning = True
+        self.is_game_over = False
+
         self.window_size_w = window_size[0]
         self.window_size_h = window_size[1]
 
         self.player = None  # Joueur
 
+        # Initialisation pour le background qui bouge
         self.background = pygame.image.load("img/Background.png").convert()
+        self.scroll = 0
+        self.tiles = math.ceil(SCREEN_WIDTH / self.background.get_width()) + 1
+
+
         self.map = pygame.image.load("img/Map.png").convert_alpha()
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
@@ -43,6 +63,16 @@ class Game:
 
         self.all_monsters = pygame.sprite.Group()
         self.spawn_monsters()
+
+        # Initialisation des images pour le Game Over
+        self.game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
+        self.restart_button_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
+        self.game_over = None
+        self.rect_game_over = None
+
+        restart_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
+        self.restart_button = Button(640, 540, restart_img, "restart", self.screen, True, 0.20, 0.25)
+
 
     def spawn_monsters(self):
         golem_positions = [
@@ -92,6 +122,15 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 1 :
                     self.player.jump()
+                elif event.key == pygame.K_o:
+                   self.is_game_over = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.restart_button is not None:
+                    if self.restart_button.rect.collidepoint(pygame.mouse.get_pos()):
+                        self.is_game_over = False
+                        pygame.display.quit()
+                        sys.exit()
 
 
     def update(self):
@@ -105,7 +144,15 @@ class Game:
         self.all_monsters.update(self.dt)
 
     def display(self):
-        self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
+
+        # Boucle qui gère le background qui bouge
+        for i in range(0, self.tiles):
+            self.screen.blit(self.background, (i * self.background.get_width() + self.scroll, 0))
+        self.scroll -= 0.5
+        if abs(self.scroll) > self.background.get_width():
+            self.scroll = 0
+
+
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
         for rect in self.rect_list:
@@ -136,6 +183,25 @@ class Game:
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
+
+        if self.is_game_over:
+            overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 150))
+            self.screen.blit(overlay, (0, 0))
+
+            self.game_over = pygame.transform.smoothscale(self.game_over_img, (int(self.game_over_img.get_width() * 0.5), int(self.game_over_img.get_height() * 0.5)))
+            self.rect_game_over = self.game_over.get_rect()
+            self.rect_game_over.topleft = (460, 90)
+            self.screen.blit(self.game_over, self.rect_game_over)
+
+            self.restart_button.update()
+            self.restart_button.draw()
+
+            if not self.music_launched:
+                self.music_launched = True
+                mixer.music.play()
+
+
 
         pygame.display.flip()
 

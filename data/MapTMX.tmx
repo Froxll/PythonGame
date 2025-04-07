@@ -2,7 +2,7 @@
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="20" tilewidth="32" tileheight="32" infinite="1" nextlayerid="4" nextobjectid="96">
  <objectgroup id="3" name="Objets">
   <object id="2" name="plateforme" x="9.33333" y="223.333" width="649" height="102"/>
-  <object id="3" name="plateforme" x="10.25" y="-0.166667" width="2" height="221.75"/>
+  <object id="3" name="plateforme" x="10.25" y="-226.542" width="2" height="448.125"/>
   <object id="4" name="plateforme" x="12.75" y="166.333" width="73.5" height="56"/>
   <object id="6" name="plateforme" x="43.75" y="134.583" width="41.5833" height="32"/>
   <object id="8" name="plateforme" x="627.334" y="223.333" width="30" height="570"/>
@@ -34,7 +34,7 @@
   <object id="52" name="plateforme" x="1764.5" y="1873.83" width="193.5" height="286.5"/>
   <object id="54" name="plateforme" x="1437.5" y="1463.33" width="188" height="21"/>
   <object id="55" name="plateforme" x="2003.75" y="2087.83" width="94" height="21.75"/>
-  <object id="56" name="plateforme" x="2148.5" y="1299.33" width="91" height="572.667"/>
+  <object id="56" name="plateforme" x="2148.5" y="1299.33" width="91" height="508.167"/>
   <object id="57" name="plateforme" x="2240" y="1300.33" width="195" height="82.5"/>
   <object id="58" name="plateforme" x="2430.41" y="1244.65" width="182" height="58"/>
   <object id="59" name="plateforme" x="2614" y="1298.83" width="491.5" height="86.5"/>
@@ -69,7 +69,7 @@
   <object id="90" name="plateforme" x="5692.67" y="1260.99" width="63" height="96.3333"/>
   <object id="91" name="plateforme" x="5750" y="635" width="4" height="625.333"/>
   <object id="92" name="plateforme" x="5469.34" y="348.166" width="286" height="287.5"/>
-  <object id="93" name="plateforme" x="5748.78" y="-0.0606067" width="5.33333" height="349.515"/>
+  <object id="93" name="plateforme" x="5748.78" y="-336.311" width="5.33333" height="685.765"/>
   <object id="94" name="plateforme" x="2898" y="2012.83" width="108" height="54"/>
  </objectgroup>
  <imagelayer id="2" name="Carte">
