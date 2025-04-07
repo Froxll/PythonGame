@@ -144,7 +144,7 @@ class Player:
             self.y_vel = -1 * self.climb_speed
         elif climb_type == "down":
             self.y_vel = self.climb_speed
-
+        self.is_jumping = False
         self.handle_move_type("climb")
 
     def handle_animation(self):
