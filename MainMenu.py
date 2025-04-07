@@ -52,7 +52,7 @@ class MainMenu:
         self.start_button = Button(650, 400, start_button_img, "start",self.screen, True)
         self.exit_button = Button(650, 525, exit_button_img, "exit", self.screen, True, 0.30, 0.35)
 
-        self.volume_button = Button(1225, 50, self.vol_on, "vol_on", self.screen, False, 3)
+        self.volume_button = Button(1225, 50, self.vol_on, "vol_on", self.screen, False, 1.5)
         self.volume_button.type_button = "vol_on"
 
         # Pour l'animation des boutons volume pressés (ChatGPT pour cette partie)
