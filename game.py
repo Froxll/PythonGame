@@ -121,6 +121,7 @@ class Game:
         for monster in self.all_monsters:
             if self.player.rect.colliderect(monster.rect):
                 if monster.state != "attack":
+                    print("MONSTRE ATTACKOS")
                     monster.state = "attack"
                     monster.current_image = 0
                     monster.time_since_last_update = 0
