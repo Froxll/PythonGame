@@ -52,18 +52,19 @@ class Player:
 
 
     def move(self):
-        self.y_vel += min(1, self.fall_count / 60)
-        if self.y_vel > 18:
-            self.y_vel = 18
-        pressed = pygame.key.get_pressed()
-        self.x_vel = 0
-        if pressed[pygame.K_LEFT] or pressed[pygame.K_q]:
-            self.move_left()
-        elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
-            self.move_right()
+        if self.hp > 0 and self.move_type != "attack":
+            self.y_vel += min(1, self.fall_count / 60)
+            if self.y_vel > 18:
+                self.y_vel = 18
+            pressed = pygame.key.get_pressed()
+            self.x_vel = 0
+            if pressed[pygame.K_LEFT] or pressed[pygame.K_q]:
+                self.move_left()
+            elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
+                self.move_right()
 
-        self.hit_box.move_ip(self.x_vel, self.y_vel)
-        self.fall_count += 1
+            self.hit_box.move_ip(self.x_vel, self.y_vel)
+            self.fall_count += 1
 
 
 
@@ -148,12 +149,14 @@ class Player:
 
     def handle_animation(self):
         self.frame_count += 1
+        if self.move_type == "attack" and self.animation_count == len(self.images["attack"]) - 1:
+            self.handle_move_type("idle")
         if self.frame_count % self.frame_per_animation == 0:
             self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
 
 
     def check_idle(self):
-        if self.x_vel == 0 and self.y_vel < 1 and self.move_type != "climb" and self.move_type != "attack":
+        if self.x_vel == 0 and self.y_vel < 1 and self.move_type != "climb" and self.move_type != "attack" and self.hp > 0:
             if self.move_type != "idle":
                 self.move_type = "idle"
                 self.animation_count = 0

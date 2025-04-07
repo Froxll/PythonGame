@@ -97,9 +97,9 @@ class Game:
                 return "EXIT"
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and self.player.jump_count < 1 :
+                if event.key == pygame.K_SPACE and self.player.jump_count < 1 and self.player.hp > 0:
                     self.player.jump()
-                if event.key == pygame.K_e : # and self.time_since_last_player_attack > 60
+                if event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]):
                     self.handle_player_attack()
 
 
@@ -219,7 +219,7 @@ class Game:
 
     def handle_player_attack(self):
         self.player.handle_move_type("attack")
-        #self.time_since_last_player_attack = 0
+        self.time_since_last_player_attack = 0
         collision_index = self.player.display_rect.collidelist(self.monsters_rect_list)
         if collision_index > -1:
             if self.all_monsters.sprites()[collision_index].health > 0:
