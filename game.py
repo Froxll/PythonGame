@@ -2,6 +2,7 @@ import math
 
 import pygame
 import pytmx
+import time
 from player import Player
 from monster import Monster
 
@@ -52,6 +53,9 @@ class Game:
         self.camera_y = 0
         self.camera_speed = 900
         self.all_monsters = pygame.sprite.Group()
+
+        self.hitbox_last_time = 0
+        self.hitbox_delay = 1
 
     def spawn_monsters(self):
         golem_positions = [
@@ -105,6 +109,8 @@ class Game:
                     self.player.climb()
 
     def update(self):
+        current_time = time.time()
+
         self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
@@ -128,6 +134,11 @@ class Game:
                     monster.current_image = 0
                     monster.time_since_last_update = 0
 
+            if self.player.rect.colliderect(monster.hitbox):
+                if current_time - self.hitbox_last_time >= self.hitbox_delay:
+                    self.player.hp -= 0.5
+                    self.hitbox_last_time = current_time
+
     def display_lifebar(self):
         full_hearts = math.floor(self.player.hp)
         half_hearts = 0
@@ -137,7 +148,7 @@ class Game:
 
         total_hearts = full_hearts + half_hearts
 
-        empty_hearts = 3 - total_hearts
+        empty_hearts = 5 - total_hearts
 
         for i in range(full_hearts):
             self.screen.blit(self.heart_full, (10 + i * 60, 10))
