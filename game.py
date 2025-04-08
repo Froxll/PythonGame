@@ -1,7 +1,10 @@
+import math
+
 import pygame
 import pytmx
 from player import Player
 from monster import Monster
+
 
 
 class Game:
@@ -64,7 +67,7 @@ class Game:
 
     def setup(self):
 
-        self.player = Player(self.screen, 50)
+        self.player = Player(self.screen, 5)
         """
         self.platforms = ...
         self.enemies = ...
@@ -125,6 +128,26 @@ class Game:
                     monster.current_image = 0
                     monster.time_since_last_update = 0
 
+    def display_lifebar(self):
+        full_hearts = math.floor(self.player.hp)
+        half_hearts = 0
+
+        if self.player.hp % 1 >= 0.5:
+            half_hearts = 1
+
+        total_hearts = full_hearts + half_hearts
+
+        empty_hearts = 3 - total_hearts
+
+        for i in range(full_hearts):
+            self.screen.blit(self.heart_full, (10 + i * 60, 10))
+
+        if half_hearts > 0:
+            self.screen.blit(self.heart_mid, (10 + full_hearts * 60, 10))
+
+        for i in range(empty_hearts):
+            self.screen.blit(self.heart_empty, (10 + (full_hearts + half_hearts + i) * 60, 10))
+
     def display(self):
         self.screen.blit(self.background, (-self.camera_x, -self.camera_y))
 
@@ -151,8 +174,7 @@ class Game:
         self.player.draw(self.camera_x, self.camera_y)
         pygame.draw.rect(self.screen, (0, 255, 0), self.player.rect.move(-self.camera_x, -self.camera_y), 2)
 
-        for i in range(3):
-            self.screen.blit(self.heart_full, (10 + i * 60, 10))
+        self.display_lifebar()
 
         pygame.display.flip()
 

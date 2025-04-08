@@ -73,7 +73,8 @@ class Monster(pygame.sprite.Sprite):
             self.current_image += 1
 
             if self.current_image == 11 and self.rect.colliderect(self.player.rect):
-                print("Touché")
+                self.player.hp -= 1
+
 
             if player_position < self.rect.centerx:
                 self.facing_right = False
