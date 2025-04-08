@@ -4,7 +4,7 @@ import time
 # Utilisation de la vidéo : https://youtu.be/B6DrRN5z_uU?si=vNqB4-23R81IHm74
 # Création du personnage / gestion des déplacements
 
-class Player():
+class Player:
     def __init__(self, screen, max_health):
         # Variable d'affichage du Joueur
         self.screen = screen

@@ -4,8 +4,10 @@ import random
 
 class Monster(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, left_limit, right_limit):
+    def __init__(self, x, y, left_limit, right_limit, player):
         super().__init__()
+
+        self.player = player
 
         self.images_walking_normal = []
         self.images_walking_flipped = []
@@ -69,6 +71,9 @@ class Monster(pygame.sprite.Sprite):
         if self.time_since_last_update >= self.animation_speed:
             self.time_since_last_update = 0
             self.current_image += 1
+
+            if self.current_image == 11 and self.rect.colliderect(self.player.rect):
+                print("Touché")
 
             if player_position < self.rect.centerx:
                 self.facing_right = False

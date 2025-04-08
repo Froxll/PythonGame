@@ -49,7 +49,6 @@ class Game:
         self.camera_y = 0
         self.camera_speed = 900
         self.all_monsters = pygame.sprite.Group()
-        self.spawn_monsters()
 
     def spawn_monsters(self):
         golem_positions = [
@@ -60,7 +59,7 @@ class Game:
         ]
 
         for pos in golem_positions:
-            monster = Monster(*pos)
+            monster = Monster(*pos, self.player)
             self.all_monsters.add(monster)
 
     def setup(self):
@@ -71,6 +70,7 @@ class Game:
         self.enemies = ...
         self.power_ups = ...
         """
+        self.spawn_monsters()
 
 
     def run(self):
@@ -121,7 +121,6 @@ class Game:
         for monster in self.all_monsters:
             if self.player.rect.colliderect(monster.rect):
                 if monster.state != "attack":
-                    print("MONSTRE ATTACKOS")
                     monster.state = "attack"
                     monster.current_image = 0
                     monster.time_since_last_update = 0
