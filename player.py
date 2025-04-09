@@ -17,7 +17,7 @@ class Player:
         self.load_sprites()
 
         #Variable de gestion de la position / Mouvement
-        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        self.display_rect = self.images["idle"][0].get_rect(x=5456, y=228) # x = 200 & y = 1970
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
         self.hit_box_offset = 18
