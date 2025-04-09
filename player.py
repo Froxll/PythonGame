@@ -39,7 +39,7 @@ class Player:
         self.climb_speed = 5
 
         # Stats de jeu
-        self.hp = 50
+        self.hp = 5
         self.damage = 1
 
         # Gestion des animations
@@ -61,9 +61,11 @@ class Player:
             pressed = pygame.key.get_pressed()
             self.x_vel = 0
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q]:
-                self.move_left()
+                if self.move_type != "attack":
+                    self.move_left()
             elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
-                self.move_right()
+                if self.move_type != "attack":
+                    self.move_right()
 
             self.hit_box.move_ip(self.x_vel, self.y_vel)
             self.fall_count += 1

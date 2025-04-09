@@ -5,7 +5,9 @@ class Powerup:
     def __init__(self, screen, player, type):
         self.screen = screen
         self.player = player
-        self.scale_change = 0.1
+        if type == "boots":
+            self.scale_change = 0.1
+        #else:
 
         # Gestion de l'animation (haut/bas)
         self.counter = 0
@@ -17,8 +19,8 @@ class Powerup:
             self.image = pygame.image.load("img/powerup/boots_powerup.png")
             self.rescale_images()
             self.display_rect = self.image.get_rect(x=150, y=self.original_y)
-
         #elif type == "heart":
+
 
     def draw(self, camera_x, camera_y):
         self.counter += 1
