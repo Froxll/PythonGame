@@ -1,5 +1,5 @@
 import pygame
-import random
+import time
 
 
 class Monster(pygame.sprite.Sprite):
@@ -8,7 +8,14 @@ class Monster(pygame.sprite.Sprite):
         super().__init__()
 
         self.player = player
-        self.hp = 4
+        self.max_hp = 4
+        self.hp = self.max_hp
+
+        self.is_respawning = False
+        self.death_time = 0
+        self.respawn_delay = 10
+        self.initial_x = x
+        self.initial_y = y
 
         self.images_walking_normal = []
         self.images_walking_flipped = []
@@ -73,9 +80,10 @@ class Monster(pygame.sprite.Sprite):
             self.time_since_last_update = 0
             self.current_image += 1
 
-            if self.current_image == 11 and self.rect.colliderect(self.player.hit_box):
+            if self.current_image == 11 and self.rect.colliderect(self.player.hit_box) and self.hp > 0:
                 self.player.hp -= 1
-
+                if self.player.hp == 0:
+                    self.player.is_dead_by_golem = True
 
             if player_position < self.rect.centerx:
                 self.facing_right = False
@@ -92,6 +100,15 @@ class Monster(pygame.sprite.Sprite):
                     self.image = self.images_attack_flipped[self.current_image]
 
     def update(self, dt, player_position):
+        current_time = time.time()
+        if self.is_respawning and current_time - self.death_time >= self.respawn_delay:
+            self.respawn()
+
+        if self.hp <= 0 and not self.is_respawning:
+            self.death_time = current_time
+            self.is_respawning = True
+            return
+
         self.time_since_last_update += dt
 
         if self.state == "attack":
@@ -115,3 +132,13 @@ class Monster(pygame.sprite.Sprite):
         self.hitbox.y = self.rect.y + 30
         self.hitbox.width = self.rect.width - 80
         self.hitbox.height = self.rect.height - 35
+
+    def respawn(self):
+        self.hp = self.max_hp
+        self.is_respawning = False
+        self.rect.x = self.initial_x
+        self.rect.y = self.initial_y
+        self.state = "walk"
+        self.current_image = 0
+        self.hitbox.x = self.rect.x + 40
+        self.hitbox.y = self.rect.y + 30

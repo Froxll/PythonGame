@@ -49,7 +49,7 @@ class Player:
         self.frame_per_animation = 6
         self.is_jumping = False
 
-
+        self.is_dead_by_golem = False
 
     def move(self):
         if self.hp > 0:
@@ -65,6 +65,9 @@ class Player:
 
             self.hit_box.move_ip(self.x_vel, self.y_vel)
             self.fall_count += 1
+
+            if self.hit_box.y >= 2200:
+                self.hp = 0
 
 
     def draw(self, camera_x, camera_y):
