@@ -18,7 +18,8 @@ class Player:
 
         #Variable de gestion de la position / Mouvement
         # self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228) # Position du perso à coté du coffre de fin
-        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        self.display_rect = self.images["idle"][0].get_rect(x=200, y=180) # Position à côté du powerup boots
+        # self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
         self.hit_box_offset = 18
@@ -138,13 +139,15 @@ class Player:
 
 
     def climb(self, climb_type):
-        self.fall_count = 0
+
         if climb_type == "up":
             self.y_vel = -1 * self.climb_speed
             self.handle_move_type("climb")
+            self.fall_count = 150
         elif climb_type == "down":
             self.y_vel = self.climb_speed
             self.handle_move_type("climb")
+            self.fall_count = 0
         self.is_jumping = False
 
 
