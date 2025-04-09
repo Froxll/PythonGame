@@ -18,8 +18,8 @@ class Player:
 
         #Variable de gestion de la position / Mouvement
         # self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228) # Position du perso à coté du coffre de fin
-        self.display_rect = self.images["idle"][0].get_rect(x=900, y=150) # Position à côté du powerup boots
-        # self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        # self.display_rect = self.images["idle"][0].get_rect(x=900, y=150) # Position à côté du powerup boots
+        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
 
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
@@ -61,9 +61,11 @@ class Player:
             pressed = pygame.key.get_pressed()
             self.x_vel = 0
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q]:
-                self.move_left()
+                if self.move_type != "attack":
+                    self.move_left()
             elif pressed[pygame.K_RIGHT] or pressed[pygame.K_d]:
-                self.move_right()
+                if self.move_type != "attack":
+                    self.move_right()
 
             self.hit_box.move_ip(self.x_vel, self.y_vel)
             self.fall_count += 1
@@ -212,7 +214,7 @@ class Player:
             if name == "boots":
                 self.jump_speed = 20
                 self.velocity = 9
-            elif name == "hearts":
+            elif name == "heart":
                 if self.hp < 5:
                     if self.hp <=4:
                         self.hp += 1
