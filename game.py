@@ -8,6 +8,7 @@ from player import Player
 from monster import Monster
 from button import Button
 from chest import Chest
+from powerup import Powerup
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -33,7 +34,8 @@ class Game:
         self.window_size_h = window_size[1]
 
         self.player = None  # Joueur
-        self.chest = None
+        self.chest = None  # Coffre
+        self.powerup_boots = None
 
         # Initialisation pour le background qui bouge
         self.background = pygame.image.load("img/Background.png").convert()
@@ -113,6 +115,7 @@ class Game:
         self.spawn_monsters()
         for monster in self.all_monsters:
             self.monsters_rect_list.append(monster.rect)
+        self.powerup_boots = Powerup(self.screen, self.player, "boots")
         """
         self.platforms = ...
         self.enemies = ...
@@ -147,12 +150,13 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 1 and self.player.hp > 0:
                     self.player.jump()
-                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]) and 1 > self.player.y_vel > 0:
+                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]) and 0 <= self.player.y_vel < 1 and self.player.hp > 0:
                     self.handle_player_attack()
+                    self.handle_chest_opening()
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
                    self.player.hp = 0
-                elif event.key == pygame.K_a:
+                elif event.key == pygame.K_a and self.player.hp > 0:
                     self.handle_chest_opening()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -244,18 +248,22 @@ class Game:
         self.player.draw(self.camera_x, self.camera_y)
 
         self.display_lifebar()
+        self.powerup_boots.draw(self.camera_x, self.camera_y)
+        display_x = self.powerup_boots.display_rect.x - self.camera_x
+        display_y = self.powerup_boots.display_rect.y - self.camera_y
+        shifted_rect = pygame.Rect(display_x, display_y, self.powerup_boots.display_rect.width,self.powerup_boots.display_rect.height)
+        pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
 
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
         pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-        
+        """
         display_x = self.player.hit_box.x - self.camera_x
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
-        """
         """
 
 
