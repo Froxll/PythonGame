@@ -6,6 +6,7 @@ from pygame import mixer
 from player import Player
 from monster import Monster
 from button import Button
+from chest import Chest
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -30,6 +31,7 @@ class Game:
         self.window_size_h = window_size[1]
 
         self.player = None  # Joueur
+        self.chest = None
 
         # Initialisation pour le background qui bouge
         self.background = pygame.image.load("img/Background.png").convert()
@@ -94,6 +96,7 @@ class Game:
     def setup(self):
 
         self.player = Player(self.screen)
+        self.chest = Chest(self.screen)
         """
         self.platforms = ...
         self.enemies = ...
@@ -131,6 +134,8 @@ class Game:
                     self.handle_player_attack()
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
+                elif event.key == pygame.K_a:
+                    self.handle_chest_opening()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.restart_button is not None:
@@ -182,6 +187,8 @@ class Game:
                 display_y = monster.rect.y - self.camera_y
                 self.screen.blit(monster.image, (display_x, display_y))
 
+        self.chest.draw(self.camera_x, self.camera_y)
+
         self.player.draw(self.camera_x, self.camera_y)
 
         display_x = self.player.display_rect.x - self.camera_x
@@ -194,6 +201,7 @@ class Game:
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
         """
+
 
         if self.is_game_over:
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
@@ -292,3 +300,7 @@ class Game:
             if self.all_monsters.sprites()[collision_index].health <= 0:
                 self.all_monsters.sprites()[collision_index].health = 0
 
+    def handle_chest_opening(self):
+        collision_index = self.player.display_rect.colliderect(self.chest.display_rect)
+        if collision_index > -1:
+            self.chest.open()

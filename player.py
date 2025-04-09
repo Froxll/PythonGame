@@ -17,7 +17,8 @@ class Player:
         self.load_sprites()
 
         #Variable de gestion de la position / Mouvement
-        self.display_rect = self.images["idle"][0].get_rect(x=5456, y=228) # x = 200 & y = 1970
+        self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228)
+        #self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
         self.hit_box_offset = 18
@@ -47,8 +48,6 @@ class Player:
         self.frame_per_animation = 6
         self.is_jumping = False
 
-
-        # Debug
 
 
     def move(self):
@@ -142,16 +141,20 @@ class Player:
         self.fall_count = 0
         if climb_type == "up":
             self.y_vel = -1 * self.climb_speed
+            self.handle_move_type("climb")
         elif climb_type == "down":
             self.y_vel = self.climb_speed
+            self.handle_move_type("climb")
         self.is_jumping = False
-        self.handle_move_type("climb")
+
 
     def handle_animation(self):
         self.frame_count += 1
         if self.move_type == "attack" and self.animation_count == len(self.images["attack"]) - 1:
             self.handle_move_type("idle")
-        if self.frame_count % self.frame_per_animation == 0:
+        if self.is_jumping and self.animation_count == len(self.images["jump"]) - 1:
+            self.animation_count = len(self.images["jump"]) - 1
+        elif self.frame_count % self.frame_per_animation == 0:
             self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
 
 
@@ -180,18 +183,18 @@ class Player:
             "run": [],
         }
         # Création des images dossiers par dossiers
-        load_images_folder(self.images["attack"], "attack")
-        load_images_folder(self.images["climb"], "climb")
-        load_images_folder(self.images["die"], "die")
-        load_images_folder(self.images["fall"], "fall")
-        load_images_folder(self.images["grab"], "grab")
-        load_images_folder(self.images["hurt"], "hurt")
-        load_images_folder(self.images["idle"], "idle")
-        load_images_folder(self.images["jump"], "jump")
-        load_images_folder(self.images["run"], "run")
+        load_images_folder(self.images["attack"], "player/attack")
+        load_images_folder(self.images["climb"], "player/climb")
+        load_images_folder(self.images["die"], "player/die")
+        load_images_folder(self.images["fall"], "player/fall")
+        load_images_folder(self.images["grab"], "player/grab")
+        load_images_folder(self.images["hurt"], "player/hurt")
+        load_images_folder(self.images["idle"], "player/idle")
+        load_images_folder(self.images["jump"], "player/jump")
+        load_images_folder(self.images["run"], "player/run")
 
 def load_images_folder(images_list, path):
-    folder_path = os.path.join("img/player/", path)
+    folder_path = os.path.join("img/", path)
     for img_name in sorted(os.listdir(folder_path)):
         img_path = os.path.join(folder_path, img_name)
         image = pygame.image.load(img_path).convert_alpha()
