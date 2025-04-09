@@ -99,7 +99,7 @@ class EndScreensManager:
         if not self.music_win:
             self.music_win = True
             mixer.music.load('audio/EndMusic.mp3')
-            mixer.music.set_volume(0.8)
+            mixer.music.set_volume(0.5)
             mixer.music.play()
 
         if self.home_button_pressed:
