@@ -17,13 +17,13 @@ FPS = 60
 
 class Game:
     def __init__(self, window_size):
-
         self.screen = pygame.display.set_mode(window_size)
         self.clock = pygame.time.Clock()
         self.dt = 0
 
         self.isRunning = True
         self.is_game_over = False
+        self.is_win = False
 
         self.window_size_w = window_size[0]
         self.window_size_h = window_size[1]
@@ -80,6 +80,13 @@ class Game:
 
         self.end_screens_manager = None
 
+        # Sounds
+        self.sound_sword = pygame.mixer.Sound("audio/Sounds/Sound_Sword.ogg")
+        self.sound_sword.set_volume(0.5)
+        self.sound_golem_dmg = pygame.mixer.Sound("audio/Sounds/Golem_Damage.ogg")
+        self.sound_golem_dmg.set_volume(0.5)
+        self.sound_golem_death = pygame.mixer.Sound("audio/Sounds/Golem_Death.ogg")
+        self.sound_golem_death.set_volume(0.5)
 
 
     def spawn_monsters(self):
@@ -161,7 +168,8 @@ class Game:
     def update(self):
         current_time = time.time()
 
-        self.player.move()
+        if not self.is_win:
+            self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
         self.check_spike_collision()
@@ -264,6 +272,7 @@ class Game:
         if self.is_game_over:
             self.end_screens_manager.display_game_over()
         elif self.chest.is_open:
+            self.is_win = True
             self.end_screens_manager.display_win()
 
 
@@ -337,13 +346,17 @@ class Game:
     def handle_player_attack(self):
         self.player.handle_move_type("attack")
         self.time_since_last_player_attack = 0
+        self.sound_sword.play()
         collision_index = self.player.display_rect.collidelist(self.monsters_rect_list)
         if collision_index > -1:
             if self.all_monsters.sprites()[collision_index].hp > 0:
                 self.all_monsters.sprites()[collision_index].hp -= self.player.damage
+                self.sound_golem_dmg.play()
 
             if self.all_monsters.sprites()[collision_index].hp  <= 0:
                 self.all_monsters.sprites()[collision_index].hp  = 0
+                if not self.all_monsters.sprites()[collision_index].death_music_played:
+                    self.sound_golem_death.play()
 
     def handle_chest_opening(self):
         collision = self.player.display_rect.colliderect(self.chest.display_rect)

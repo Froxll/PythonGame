@@ -68,7 +68,7 @@ class EndScreensManager:
             self.music_game_over = True
             if self.player.is_dead_by_golem:
                 mixer.music.load('audio/tk78_55milliards.mp3')
-                mixer.music.set_volume(0.7)
+                mixer.music.set_volume(0.5)
             else:
                 mixer.music.load('audio/tk78_maisNAN.mp3')
                 mixer.music.set_volume(1)
@@ -99,7 +99,7 @@ class EndScreensManager:
         if not self.music_win:
             self.music_win = True
             mixer.music.load('audio/EndMusic.mp3')
-            mixer.music.set_volume(0.5)
+            mixer.music.set_volume(0.4)
             mixer.music.play()
 
         if self.home_button_pressed:

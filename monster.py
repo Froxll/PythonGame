@@ -63,6 +63,8 @@ class Monster(pygame.sprite.Sprite):
         self.state = "walk"
         self.attack_timer = 0
 
+        self.death_music_played = False
+
     def update_walking(self):
         if self.time_since_last_update >= self.animation_speed:
             self.time_since_last_update = 0
@@ -107,6 +109,8 @@ class Monster(pygame.sprite.Sprite):
         if self.hp <= 0 and not self.is_respawning:
             self.death_time = current_time
             self.is_respawning = True
+            if not self.death_music_played:
+                self.death_music_played = True
             return
 
         self.time_since_last_update += dt
@@ -142,3 +146,4 @@ class Monster(pygame.sprite.Sprite):
         self.current_image = 0
         self.hitbox.x = self.rect.x + 40
         self.hitbox.y = self.rect.y + 30
+        self.death_music_played = False
