@@ -99,15 +99,16 @@ class Monster(pygame.sprite.Sprite):
             self.update_walking()
 
         # Mise à jour de la position
-        if self.facing_right:
-            self.rect.x += self.speed
-        else:
-            self.rect.x -= self.speed
+        if self.state == "walk":
+            if self.facing_right:
+                self.rect.x += self.speed
+            else:
+                self.rect.x -= self.speed
 
-        if self.rect.x >= self.right_limit:
-            self.facing_right = False
-        elif self.rect.x <= self.left_limit:
-            self.facing_right = True
+            if self.rect.x >= self.right_limit:
+                self.facing_right = False
+            elif self.rect.x <= self.left_limit:
+                self.facing_right = True
 
         self.hitbox.x = self.rect.x + 40
         self.hitbox.y = self.rect.y + 30

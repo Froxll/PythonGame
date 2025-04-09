@@ -55,7 +55,7 @@ class Game:
         self.all_monsters = pygame.sprite.Group()
 
         self.hitbox_last_time = 0
-        self.hitbox_delay = 1
+        self.hitbox_delay = 2
 
     def spawn_monsters(self):
         golem_positions = [
