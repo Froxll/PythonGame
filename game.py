@@ -41,7 +41,6 @@ class Game:
         self.tiles = math.ceil(SCREEN_WIDTH / self.background.get_width()) + 1
         self.map = pygame.image.load("img/Map.png").convert_alpha()
 
-
         self.heart_full = pygame.image.load("img/Lifebar/Full_Heart.png")
         self.heart_mid = pygame.image.load("img/Lifebar/Mid_Heart.png")
         self.heart_empty = pygame.image.load("img/Lifebar/Empty_Heart.png")
@@ -50,7 +49,6 @@ class Game:
         self.heart_full = pygame.transform.scale(self.heart_full, heart_size)
         self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
         self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
-
 
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
@@ -70,8 +68,6 @@ class Game:
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.spades_list.append(rect)
 
-
-
         # Caméra
         self.camera_x = 0
         self.camera_y = 0
@@ -82,8 +78,6 @@ class Game:
         self.hitbox_delay = 2
         self.time_since_last_player_attack = 0
 
-
-
         # Initialisation des images pour le Game Over
         self.game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
         self.restart_button_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
@@ -92,7 +86,6 @@ class Game:
 
         restart_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
         self.restart_button = Button(640, 540, restart_img, "restart", self.screen, True, 0.20, 0.25)
-
 
     def spawn_monsters(self):
         golem_positions = [
@@ -118,8 +111,6 @@ class Game:
         self.enemies = ...
         self.power_ups = ...
         """
-
-
 
     def run(self):
         while self.isRunning:
@@ -147,11 +138,12 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 1 and self.player.hp > 0:
                     self.player.jump()
-                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]) and 1 > self.player.y_vel > 0:
+                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(
+                        self.player.images["attack"]) and 1 > self.player.y_vel > 0:
                     self.handle_player_attack()
                 elif event.key == pygame.K_o:
-                   self.is_game_over = True
-                   self.player.hp = 0
+                    self.is_game_over = True
+                    self.player.hp = 0
                 elif event.key == pygame.K_a:
                     self.handle_chest_opening()
 
@@ -162,7 +154,6 @@ class Game:
                         pygame.display.quit()
                         sys.exit()
 
-
     def update(self):
         current_time = time.time()
 
@@ -170,7 +161,6 @@ class Game:
         self.check_rect_collisions()
         self.check_ladder_collisions()
         self.handle_camera_movements()
-
 
         self.time_since_last_player_attack += 1
 
@@ -183,7 +173,7 @@ class Game:
                     monster.current_image = 0
                     monster.time_since_last_update = 0
 
-            if self.player.hit_box.colliderect(monster.hitbox):
+            if self.player.hit_box.colliderect(monster.hitbox) and monster.hp > 0:
                 if current_time - self.hitbox_last_time >= self.hitbox_delay:
                     self.player.hp -= 0.5
                     self.hitbox_last_time = current_time
@@ -217,7 +207,6 @@ class Game:
         if abs(self.scroll) > self.background.get_width():
             self.scroll = 0
 
-
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
         for rect in self.rect_list:
@@ -245,26 +234,26 @@ class Game:
 
         self.display_lifebar()
 
-
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
-        shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
+        shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width,
+                                   self.player.display_rect.height)
         pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-        
+
         display_x = self.player.hit_box.x - self.camera_x
         display_y = self.player.hit_box.y - self.camera_y
-        shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
+        shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width, self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
         """
         """
-
 
         if self.is_game_over:
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 150))
             self.screen.blit(overlay, (0, 0))
 
-            self.game_over = pygame.transform.smoothscale(self.game_over_img, (int(self.game_over_img.get_width() * 0.5), int(self.game_over_img.get_height() * 0.5)))
+            self.game_over = pygame.transform.smoothscale(self.game_over_img, (
+            int(self.game_over_img.get_width() * 0.5), int(self.game_over_img.get_height() * 0.5)))
             self.rect_game_over = self.game_over.get_rect()
             self.rect_game_over.topleft = (460, 90)
             self.screen.blit(self.game_over, self.rect_game_over)
@@ -276,19 +265,21 @@ class Game:
                 self.music_launched = True
                 mixer.music.play()
 
-
-
         pygame.display.flip()
 
     def check_rect_collisions(self):
         collision_index = self.player.hit_box.collidelist(self.rect_list)
-        if  collision_index > -1:
+        if collision_index > -1:
             # J'ai essayé d'implémenter quelque chose mais ChatGPT a corrigé en me donnant cette version
             # Calculer les distances entre les bords du joueur et du rectangle touché
-            dx_left = abs(self.player.hit_box.right - self.rect_list[collision_index].left)  # Distance au bord gauche de l'obstacle
-            dx_right = abs(self.player.hit_box.left - self.rect_list[collision_index].right)  # Distance au bord droit de l'obstacle
-            dy_top = abs(self.player.hit_box.bottom - self.rect_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
-            dy_bottom = abs(self.player.hit_box.top - self.rect_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
+            dx_left = abs(self.player.hit_box.right - self.rect_list[
+                collision_index].left)  # Distance au bord gauche de l'obstacle
+            dx_right = abs(self.player.hit_box.left - self.rect_list[
+                collision_index].right)  # Distance au bord droit de l'obstacle
+            dy_top = abs(self.player.hit_box.bottom - self.rect_list[
+                collision_index].top)  # Distance au bord supérieur de l'obstacle
+            dy_bottom = abs(self.player.hit_box.top - self.rect_list[
+                collision_index].bottom)  # Distance au bord inférieur de l'obstacle
 
             # Trouver le côté où la collision est la plus "profonde" (le plus petit décalage)
             min_dist = min(dx_left, dx_right, dy_top, dy_bottom)
@@ -316,10 +307,14 @@ class Game:
             elif pressed[pygame.K_DOWN] or pressed[pygame.K_s]:
                 self.player.climb("down")
             else:
-                dx_left = abs(self.player.hit_box.right - self.ladder_list[collision_index].left)  # Distance au bord gauche de l'obstacle
-                dx_right = abs(self.player.hit_box.left - self.ladder_list[collision_index].right)  # Distance au bord droit de l'obstacle
-                dy_top = abs(self.player.hit_box.bottom - self.ladder_list[collision_index].top)  # Distance au bord supérieur de l'obstacle
-                dy_bottom = abs(self.player.hit_box.top - self.ladder_list[collision_index].bottom)  # Distance au bord inférieur de l'obstacle
+                dx_left = abs(self.player.hit_box.right - self.ladder_list[
+                    collision_index].left)  # Distance au bord gauche de l'obstacle
+                dx_right = abs(self.player.hit_box.left - self.ladder_list[
+                    collision_index].right)  # Distance au bord droit de l'obstacle
+                dy_top = abs(self.player.hit_box.bottom - self.ladder_list[
+                    collision_index].top)  # Distance au bord supérieur de l'obstacle
+                dy_bottom = abs(self.player.hit_box.top - self.ladder_list[
+                    collision_index].bottom)  # Distance au bord inférieur de l'obstacle
 
                 # Trouver le côté où la collision est la plus "profonde" (le plus petit décalage)
                 min_dist = min(dx_left, dx_right, dy_top, dy_bottom)
@@ -349,13 +344,12 @@ class Game:
         self.player.handle_move_type("attack")
         self.time_since_last_player_attack = 0
         collision_index = self.player.display_rect.collidelist(self.monsters_rect_list)
-        print(collision_index)
         if collision_index > -1:
             if self.all_monsters.sprites()[collision_index].hp > 0:
                 self.all_monsters.sprites()[collision_index].hp -= self.player.damage
 
-            if self.all_monsters.sprites()[collision_index].hp  <= 0:
-                self.all_monsters.sprites()[collision_index].hp  = 0
+            if self.all_monsters.sprites()[collision_index].hp <= 0:
+                self.all_monsters.sprites()[collision_index].hp = 0
 
     def handle_chest_opening(self):
         collision_index = self.player.display_rect.colliderect(self.chest.display_rect)
