@@ -82,8 +82,7 @@ class Game:
         self.hitbox_delay = 2
         self.time_since_last_player_attack = 0
 
-        for monster in self.all_monsters:
-            self.monsters_rect_list.append(monster.rect)
+
 
         # Initialisation des images pour le Game Over
         self.game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
@@ -112,6 +111,8 @@ class Game:
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
         self.spawn_monsters()
+        for monster in self.all_monsters:
+            self.monsters_rect_list.append(monster.rect)
         """
         self.platforms = ...
         self.enemies = ...
@@ -146,7 +147,7 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.player.jump_count < 1 and self.player.hp > 0:
                     self.player.jump()
-                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]):
+                elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]) and 1 > self.player.y_vel > 0:
                     self.handle_player_attack()
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
@@ -244,7 +245,7 @@ class Game:
 
         self.display_lifebar()
 
-        """
+
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
@@ -254,6 +255,7 @@ class Game:
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
+        """
         """
 
 
@@ -347,12 +349,13 @@ class Game:
         self.player.handle_move_type("attack")
         self.time_since_last_player_attack = 0
         collision_index = self.player.display_rect.collidelist(self.monsters_rect_list)
+        print(collision_index)
         if collision_index > -1:
-            if self.all_monsters.sprites()[collision_index].health > 0:
-                self.all_monsters.sprites()[collision_index].health -= self.player.damage
+            if self.all_monsters.sprites()[collision_index].hp > 0:
+                self.all_monsters.sprites()[collision_index].hp -= self.player.damage
 
-            if self.all_monsters.sprites()[collision_index].health <= 0:
-                self.all_monsters.sprites()[collision_index].health = 0
+            if self.all_monsters.sprites()[collision_index].hp  <= 0:
+                self.all_monsters.sprites()[collision_index].hp  = 0
 
     def handle_chest_opening(self):
         collision_index = self.player.display_rect.colliderect(self.chest.display_rect)

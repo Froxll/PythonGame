@@ -51,7 +51,7 @@ class Player:
 
 
     def move(self):
-        if self.hp > 0 and self.move_type != "attack":
+        if self.hp > 0:
             self.y_vel += min(1, self.fall_count / 60)
             if self.y_vel > 18:
                 self.y_vel = 18
