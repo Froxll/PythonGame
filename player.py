@@ -17,8 +17,8 @@ class Player:
         self.load_sprites()
 
         #Variable de gestion de la position / Mouvement
-        self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228)
-        #self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        # self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228) Position du perso à coté du coffre de fin
+        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
         self.hit_box_offset = 18
@@ -66,8 +66,6 @@ class Player:
             self.fall_count += 1
 
 
-
-
     def draw(self, camera_x, camera_y):
         display_x = self.display_rect.x - camera_x
         display_y = self.display_rect.y - camera_y
@@ -76,6 +74,8 @@ class Player:
         self.handle_animation()
         self.display_rect.x = self.hit_box.x - self.hit_box.width / 2 - self.hit_box_offset
         self.display_rect.y = self.hit_box.y
+        if self.hp <= 0:
+            self.handle_move_type("die")
 
         if self.is_jumping and self.animation_count < len(self.images["jump"]) and self.y_vel < 0:
             if self.direction == "left":
@@ -152,14 +152,16 @@ class Player:
         self.frame_count += 1
         if self.move_type == "attack" and self.animation_count == len(self.images["attack"]) - 1:
             self.handle_move_type("idle")
-        if self.is_jumping and self.animation_count == len(self.images["jump"]) - 1:
+        elif self.is_jumping and self.animation_count == len(self.images["jump"]) - 1:
             self.animation_count = len(self.images["jump"]) - 1
+        elif self.hp <= 0 and self.animation_count == len(self.images["die"]) - 1:
+            self.animation_count = len(self.images["die"]) - 1
         elif self.frame_count % self.frame_per_animation == 0:
             self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
 
 
     def check_idle(self):
-        if self.x_vel == 0 and self.y_vel < 1 and self.move_type != "climb" and self.move_type != "attack" and self.hp > 0:
+        if self.x_vel == 0 and self.y_vel < 1 and self.move_type != "climb" and self.move_type != "attack" and self.hp > 0 and self.move_type != "jump" and self.move_type != "die":
             if self.move_type != "idle":
                 self.move_type = "idle"
                 self.animation_count = 0

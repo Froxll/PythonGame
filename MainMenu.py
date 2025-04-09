@@ -71,7 +71,6 @@ class MainMenu:
 
             if self.start_button.is_clicked:
                 mixer.music.set_volume(0.25)
-                print("i")
                 return True
 
             self.clock.tick(FPS)

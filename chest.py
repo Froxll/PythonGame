@@ -12,7 +12,7 @@ class Chest:
         self.scale_change = 0.85
         self.rescale_images()
         self.display_rect = self.images[0].get_rect(x=5550, y=292)
-        print(self.display_rect.width, self.display_rect.height)
+
         # Gestion de l'animation
         self.is_closed = True
         self.is_opening = False

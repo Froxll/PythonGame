@@ -136,6 +136,7 @@ class Game:
                     self.handle_player_attack()
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
+                   self.player.hp = 0
                 elif event.key == pygame.K_a:
                     self.handle_chest_opening()
 
