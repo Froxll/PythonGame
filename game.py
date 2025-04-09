@@ -53,7 +53,7 @@ class Game:
 
         self.rect_list = []
         self.ladder_list = []
-        self.spades_list = []
+        self.spikes_list = []
 
         # Placement des rect de collision
         for obj in tmx_data.objects:
@@ -65,7 +65,7 @@ class Game:
                 self.ladder_list.append(rect)
             if obj.name == "piques":
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
-                self.spades_list.append(rect)
+                self.spikes_list.append(rect)
 
         # Caméra
         self.camera_x = 0
@@ -76,6 +76,7 @@ class Game:
         self.hitbox_last_time = 0
         self.hitbox_delay = 2
         self.time_since_last_player_attack = 0
+        self.time_since_last_spike_hit = 0
 
         self.end_screens_manager = None
 
@@ -163,6 +164,7 @@ class Game:
         self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
+        self.check_spike_collision()
         self.handle_camera_movements()
 
         if self.powerup_boots is not None:
@@ -173,6 +175,7 @@ class Game:
 
         self.all_monsters.update(self.dt, self.player.hit_box.centerx)
         self.time_since_last_player_attack += 1
+        self.time_since_last_spike_hit += 1
 
         if self.player.hp <= 0:
             self.is_game_over = True
@@ -343,8 +346,8 @@ class Game:
                 self.all_monsters.sprites()[collision_index].hp  = 0
 
     def handle_chest_opening(self):
-        collision_index = self.player.display_rect.colliderect(self.chest.display_rect)
-        if collision_index:
+        collision = self.player.display_rect.colliderect(self.chest.display_rect)
+        if collision:
             self.chest.open()
 
     def check_boots_powerup_collision(self):
@@ -358,3 +361,10 @@ class Game:
         if collision:
             self.player.obtain_powerup("heart")
             self.powerup_heart = None
+
+    def check_spike_collision(self):
+        collision_index = self.player.hit_box.collidelist(self.spikes_list)
+        if collision_index > -1:
+            if self.time_since_last_spike_hit / 60 >= 1:
+                self.time_since_last_spike_hit = 0
+                self.player.hp -= 0.5

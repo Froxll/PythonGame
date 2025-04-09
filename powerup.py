@@ -44,3 +44,4 @@ class Powerup:
 
     def rescale_images(self):
         self.image = self.get_scaled_image(self.image, self.scale_change)
+
