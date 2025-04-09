@@ -22,8 +22,8 @@ class MainMenu:
 
         # Pour la musique
         mixer.init()
-        mixer.music.load('audio/MainMenu_music.mp3')
-        mixer.music.set_volume(0.5)
+        mixer.music.load('audio/Kongolese.mp3')
+        mixer.music.set_volume(0.2)
 
         # Pour le background
         self.screen = screen
@@ -60,8 +60,8 @@ class MainMenu:
         self.volume_button_press_time = 0
         self.volume_button_press_delay = 200  # en ms
 
-        # Lancement de la musique (en mode infini : -1)
-        mixer.music.play(-1)
+        # Lancement de la musique
+        mixer.music.play()
 
         self.isRunning = True
 

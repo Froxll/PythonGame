@@ -114,6 +114,8 @@ class Game:
                 return state
             elif state == "RESTART":
                 return state
+            elif state == "HOME":
+                return state
             # Mise à jour des différents éléments
             self.update()
 
@@ -146,6 +148,8 @@ class Game:
                 return "EXIT"
             elif state_end == "RESTART":
                 return "RESTART"
+            elif state_end == "HOME":
+                return "HOME"
 
 
 
@@ -215,17 +219,7 @@ class Game:
 
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
-        for rect in self.rect_list:
-            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=2)
 
-        for rect in self.ladder_list:
-            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (0, 255, 0), shifted_rect, width=2)
-
-        for rect in self.spades_list:
-            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
         for monster in self.all_monsters:
             # Décaler la position du monstre selon la position de la caméra
@@ -250,13 +244,13 @@ class Game:
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
-        pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
+        #pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
         """
         display_x = self.player.hit_box.x - self.camera_x
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
-        pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
+        #pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
         """
 
         # Ecran GameOver
