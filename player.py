@@ -140,16 +140,20 @@ class Player:
         self.fall_count = 0
         if climb_type == "up":
             self.y_vel = -1 * self.climb_speed
+            self.handle_move_type("climb")
         elif climb_type == "down":
             self.y_vel = self.climb_speed
+            self.handle_move_type("climb")
         self.is_jumping = False
-        self.handle_move_type("climb")
+
 
     def handle_animation(self):
         self.frame_count += 1
         if self.move_type == "attack" and self.animation_count == len(self.images["attack"]) - 1:
             self.handle_move_type("idle")
-        if self.frame_count % self.frame_per_animation == 0:
+        if self.is_jumping and self.animation_count == len(self.images["jump"]) - 1:
+            self.animation_count = len(self.images["jump"]) - 1
+        elif self.frame_count % self.frame_per_animation == 0:
             self.animation_count = (self.animation_count + 1) % len(self.images[self.move_type])
 
 
