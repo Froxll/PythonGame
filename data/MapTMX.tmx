@@ -71,7 +71,6 @@
   <object id="92" name="plateforme" x="5469.34" y="350.416" width="286" height="285.25"/>
   <object id="93" name="plateforme" x="5748.78" y="-336.311" width="5.33333" height="685.765"/>
   <object id="94" name="plateforme" x="2898" y="2012.83" width="108" height="54"/>
-  <object id="96" name="plateforme" x="5563" y="315" width="47" height="41"/>
  </objectgroup>
  <imagelayer id="2" name="Carte">
   <image source="../img/Map.png" width="5755" height="2160"/>
