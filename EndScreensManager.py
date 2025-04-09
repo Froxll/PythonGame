@@ -4,11 +4,11 @@ from button import Button
 
 
 class EndScreensManager:
-    def __init__(self, screen, chest):
+    def __init__(self, screen, player):
         mixer.init()
 
         self.screen = screen
-        self.chest = chest
+        self.player = player
 
         # Initialisation pour l'écran de Game Over
         game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
@@ -53,8 +53,13 @@ class EndScreensManager:
 
         if not self.music_game_over:
             self.music_game_over = True
-            mixer.music.load('audio/tk78_maisNAN.mp3')
-            mixer.music.set_volume(0.8)
+            if self.player.is_dead_by_golem:
+                mixer.music.load('audio/tk78_55milliards.mp3')
+                mixer.music.set_volume(0.7)
+            else:
+                mixer.music.load('audio/tk78_maisNAN.mp3')
+                mixer.music.set_volume(1)
+
             mixer.music.play()
 
     def display_win(self):
@@ -79,15 +84,25 @@ class EndScreensManager:
             # Événements des boutons du Game Over
             if self.restart_button_go is not None and self.is_game_over:
                 if self.restart_button_go.rect.collidepoint(pygame.mouse.get_pos()):
+                    mixer.music.stop()
+                    mixer.music.load('audio/MainMenu_music.mp3')
+                    mixer.music.set_volume(0.5)
+                    mixer.music.play()
                     return "RESTART"
             if self.exit_button_go is not None and self.is_game_over:
                 if self.exit_button_go.rect.collidepoint(pygame.mouse.get_pos()):
+                    mixer.music.stop()
                     return "EXIT"
 
             # Événements des boutons du Win
             if self.restart_button_win is not None and self.is_win:
                 if self.restart_button_win.rect.collidepoint(pygame.mouse.get_pos()):
+                    mixer.music.stop()
+                    mixer.music.load('audio/MainMenu_music.mp3')
+                    mixer.music.set_volume(0.5)
+                    mixer.music.play()
                     return "RESTART"
             if self.exit_button_win is not None and self.is_win:
                 if self.exit_button_win.rect.collidepoint(pygame.mouse.get_pos()):
+                    mixer.music.stop()
                     return "EXIT"

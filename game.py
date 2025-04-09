@@ -99,7 +99,7 @@ class Game:
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
 
-        self.end_screens_manager = EndScreensManager(self.screen, self.chest)
+        self.end_screens_manager = EndScreensManager(self.screen, self.player)
 
         self.spawn_monsters()
         for monster in self.all_monsters:
@@ -166,7 +166,7 @@ class Game:
         self.check_ladder_collisions()
         self.handle_camera_movements()
 
-        self.all_monsters.update(self.dt)
+        self.all_monsters.update(self.dt, self.player.hit_box.centerx)
         self.time_since_last_player_attack += 1
 
         if self.player.hp <= 0:
@@ -184,6 +184,8 @@ class Game:
             if self.player.hit_box.colliderect(monster.hitbox):
                 if current_time - self.hitbox_last_time >= self.hitbox_delay:
                     self.player.hp -= 0.5
+                    if self.player.hp == 0:
+                        self.player.is_dead_by_golem = True
                     self.hitbox_last_time = current_time
 
     def display_lifebar(self):
