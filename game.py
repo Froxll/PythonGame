@@ -1,12 +1,10 @@
-import sys
 import pygame
 import math
 import pytmx
-from pygame import mixer
 from player import Player
 from monster import Monster
-from button import Button
 from chest import Chest
+from EndScreensManager import EndScreensManager
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -14,11 +12,6 @@ FPS = 60
 
 class Game:
     def __init__(self, window_size):
-        # Initialisation Son Game Over
-        mixer.init()
-        mixer.music.load('audio/tk78_maisNAN.mp3')
-        mixer.music.set_volume(0.8)
-        self.music_launched = False
 
         self.screen = pygame.display.set_mode(window_size)
         self.clock = pygame.time.Clock()
@@ -73,14 +66,8 @@ class Game:
         for monster in self.all_monsters:
             self.monsters_rect_list.append(monster.rect)
 
-        # Initialisation des images pour le Game Over
-        self.game_over_img = pygame.image.load("img/Game/Game_Over.png").convert_alpha()
-        self.restart_button_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
-        self.game_over = None
-        self.rect_game_over = None
+        self.end_screens_manager = None
 
-        restart_img = pygame.image.load("img/Game/Restart_Button.png").convert_alpha()
-        self.restart_button = Button(640, 540, restart_img, "restart", self.screen, True, 0.20, 0.25)
 
 
     def spawn_monsters(self):
@@ -99,6 +86,9 @@ class Game:
 
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
+
+        self.end_screens_manager = EndScreensManager(self.screen, self.chest)
+
         """
         self.platforms = ...
         self.enemies = ...
@@ -112,6 +102,8 @@ class Game:
             # Gestion de l'évenement "Quit
             state = self.handling_events()
             if state == "EXIT":
+                return state
+            elif state == "RESTART":
                 return state
             # Mise à jour des différents éléments
             self.update()
@@ -134,17 +126,20 @@ class Game:
                     self.player.jump()
                 elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]):
                     self.handle_player_attack()
+                # TEST
                 elif event.key == pygame.K_o:
                    self.is_game_over = True
                 elif event.key == pygame.K_a:
                     self.handle_chest_opening()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.restart_button is not None:
-                    if self.restart_button.rect.collidepoint(pygame.mouse.get_pos()):
-                        self.is_game_over = False
-                        pygame.display.quit()
-                        sys.exit()
+            state_end = self.end_screens_manager.handle_event(event)
+            if state_end == "EXIT":
+                return "EXIT"
+            elif state_end == "RESTART":
+                return "RESTART"
+
+
+
 
 
     def update(self):
@@ -153,10 +148,11 @@ class Game:
         self.check_ladder_collisions()
         self.handle_camera_movements()
 
-
-
         self.all_monsters.update(self.dt)
         self.time_since_last_player_attack += 1
+
+        if self.player.hp <= 0:
+            self.is_game_over = True
 
     def display(self):
 
@@ -204,23 +200,16 @@ class Game:
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
         """
 
-
+        # Ecran GameOver
         if self.is_game_over:
-            overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 150))
-            self.screen.blit(overlay, (0, 0))
+            self.end_screens_manager.display_game_over()
+        elif self.chest.is_open:
+            self.end_screens_manager.display_win()
 
-            self.game_over = pygame.transform.smoothscale(self.game_over_img, (int(self.game_over_img.get_width() * 0.5), int(self.game_over_img.get_height() * 0.5)))
-            self.rect_game_over = self.game_over.get_rect()
-            self.rect_game_over.topleft = (460, 90)
-            self.screen.blit(self.game_over, self.rect_game_over)
 
-            self.restart_button.update()
-            self.restart_button.draw()
 
-            if not self.music_launched:
-                self.music_launched = True
-                mixer.music.play()
+
+
 
 
 
