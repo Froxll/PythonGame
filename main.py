@@ -6,13 +6,12 @@ from game import Game
 from MainMenu import MainMenu
 
 
-if __name__ == "__main__":
+def main_loop():
     window_size = (1280, 720)
 
     pygame.init()
     screen = pygame.display.set_mode(window_size)
     clock = pygame.time.Clock()
-
 
     menu = MainMenu(screen, clock)
     current_scene = "menu"
@@ -28,5 +27,10 @@ if __name__ == "__main__":
             state = game.run()
             if state == "EXIT":
                 break
+            elif state == "RESTART":
+                continue
     pygame.quit()
 
+
+if __name__ == "__main__":
+    main_loop()
