@@ -37,8 +37,8 @@ class Player:
         self.climb_speed = 5
 
         # Stats de jeu
-        self.hp = 100
-        self.damage = 25
+        self.hp = 5
+        self.damage = 1
 
         # Gestion des animations
         self.direction = "right"

@@ -4,77 +4,113 @@ import random
 
 class Monster(pygame.sprite.Sprite):
 
-    def __init__(self, x, y, left_limit, right_limit):
+    def __init__(self, x, y, left_limit, right_limit, player):
         super().__init__()
 
-        self.health = 100
-        self.max_health = 100
-        self.attack = 5
+        self.player = player
 
-        # On créé les tableaux pour stocker les images du golem
-        self.images_normal = []
-        self.images_flipped = []
+        self.images_walking_normal = []
+        self.images_walking_flipped = []
+        self.images_attack_normal = []
+        self.images_attack_flipped = []
 
-        for i in range(18):  # On stock les images d'animations du golem en version normale et en mirror
+        for i in range(18):
             img_path = f'img/Golem/Walking/Golem_01_Walking_{i:03d}.png'
             img = pygame.image.load(img_path)
-            self.images_normal.append(pygame.transform.scale(img, (150, 150)))
+            self.images_walking_normal.append(pygame.transform.scale(img, (150, 150)))
             flipped_img = pygame.transform.flip(img, True, False)
-            self.images_flipped.append(pygame.transform.scale(flipped_img, (150, 150)))
+            self.images_walking_flipped.append(pygame.transform.scale(flipped_img, (150, 150)))
 
-        self.image = self.images_normal[0]  # On prend la première image pour initialiser notre golem
+        for i in range(12):
+            img_path = f'img/Golem/Attacking/Golem_01_Attacking_{i:03d}.png'
+            img = pygame.image.load(img_path)
+            scaled_img = pygame.transform.scale(img, (150, 150))
+
+            self.images_attack_normal.append(scaled_img)
+            flipped = pygame.transform.flip(img, True, False)
+            self.images_attack_flipped.append(pygame.transform.scale(flipped, (150, 150)))
+
+        self.image = self.images_walking_normal[0]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-        # Limites du mouvement
+        self.hitbox = pygame.Rect(
+            self.rect.x + 40,
+            self.rect.y + 30,
+            self.rect.width - 80,
+            self.rect.height - 35,
+        )
+
         self.left_limit = left_limit
         self.right_limit = right_limit
 
-        # Direction et vitesse
         self.facing_right = True
-        self.speed = 2
+        self.speed = 1
 
-        # Animation
         self.current_image = 0
         self.time_since_last_update = 0
         self.animation_speed = 0.1
 
-        #Pause
-        self.is_stopped = False  # Indique si le golem est à l'arrêt
-        self.stop_timer = 0  # Temps restant d'arrêt
-        self.next_stop_time = random.uniform(2, 5)  # Prochaine pause dans 2 à 5 sec
+        self.state = "walk"
+        self.attack_timer = 0
 
-    def update(self, dt):
-        # Mise à jour de l'animation
-        self.time_since_last_update += dt
-        self.next_stop_time -= dt
-
-        if not self.is_stopped and self.time_since_last_update >= self.animation_speed:
+    def update_walking(self):
+        if self.time_since_last_update >= self.animation_speed:
             self.time_since_last_update = 0
-            self.current_image = (self.current_image + 1) % len(self.images_normal)
-            self.image = self.images_normal[self.current_image] if self.facing_right else self.images_flipped[
-                self.current_image]
+            self.current_image += 1
+            if self.current_image >= len(self.images_walking_normal):
+                self.current_image = 0
 
-        if self.next_stop_time <= 0 and not self.is_stopped:
-            self.is_stopped = True
-            self.stop_timer = 1
+            if self.facing_right:
+                self.image = self.images_walking_normal[self.current_image]
+            else:
+                self.image = self.images_walking_flipped[self.current_image]
 
-        if self.is_stopped:
-            self.stop_timer -= dt
-            if self.stop_timer <= 0:
-                self.is_stopped = False
-                self.next_stop_time = random.uniform(2, 5)
-            return  # On sort de update pour ne pas déplacer le golem pendant la pause
+    def update_attack(self, player_position):
+        if self.time_since_last_update >= self.animation_speed:
+            self.time_since_last_update = 0
+            self.current_image += 1
 
-        # Déplacement du monstre à droite ou à gauche
-        if self.facing_right:
-            self.rect.x += self.speed
-        else:
-            self.rect.x -= self.speed
+            if self.current_image == 11 and self.rect.colliderect(self.player.rect):
+                self.player.hp -= 1
 
-        # Changer de direction aux limites imposées
-        if self.rect.x >= self.right_limit:
-            self.facing_right = False
-        elif self.rect.x <= self.left_limit:
-            self.facing_right = True
+
+            if player_position < self.rect.centerx:
+                self.facing_right = False
+            else:
+                self.facing_right = True
+
+            if self.current_image >= len(self.images_attack_normal):
+                self.state = "walk"
+                self.current_image = 0
+            else:
+                if self.facing_right:
+                    self.image = self.images_attack_normal[self.current_image]
+                else:
+                    self.image = self.images_attack_flipped[self.current_image]
+
+    def update(self, dt, player_position):
+        self.time_since_last_update += dt
+
+        if self.state == "attack":
+            self.update_attack(player_position)
+        elif self.state == "walk":
+            self.update_walking()
+
+        # Mise à jour de la position
+        if self.state == "walk":
+            if self.facing_right:
+                self.rect.x += self.speed
+            else:
+                self.rect.x -= self.speed
+
+            if self.rect.x >= self.right_limit:
+                self.facing_right = False
+            elif self.rect.x <= self.left_limit:
+                self.facing_right = True
+
+        self.hitbox.x = self.rect.x + 40
+        self.hitbox.y = self.rect.y + 30
+        self.hitbox.width = self.rect.width - 80
+        self.hitbox.height = self.rect.height - 35

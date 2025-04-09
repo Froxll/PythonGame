@@ -1,7 +1,8 @@
+import math
 import sys
 import pygame
-import math
 import pytmx
+import time
 from pygame import mixer
 from player import Player
 from monster import Monster
@@ -11,6 +12,7 @@ from chest import Chest
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
+
 
 class Game:
     def __init__(self, window_size):
@@ -37,9 +39,19 @@ class Game:
         self.background = pygame.image.load("img/Background.png").convert()
         self.scroll = 0
         self.tiles = math.ceil(SCREEN_WIDTH / self.background.get_width()) + 1
-
-
         self.map = pygame.image.load("img/Map.png").convert_alpha()
+
+
+        self.heart_full = pygame.image.load("img/Lifebar/Full_Heart.png")
+        self.heart_mid = pygame.image.load("img/Lifebar/Mid_Heart.png")
+        self.heart_empty = pygame.image.load("img/Lifebar/Empty_Heart.png")
+
+        heart_size = (50, 44)
+        self.heart_full = pygame.transform.scale(self.heart_full, heart_size)
+        self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
+        self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
+
+
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
         self.rect_list = []
@@ -65,9 +77,9 @@ class Game:
         self.camera_y = 0
 
         self.all_monsters = pygame.sprite.Group()
-        self.spawn_monsters()
         self.monsters_rect_list = []
-
+        self.hitbox_last_time = 0
+        self.hitbox_delay = 2
         self.time_since_last_player_attack = 0
 
         for monster in self.all_monsters:
@@ -92,18 +104,20 @@ class Game:
         ]
 
         for pos in golem_positions:
-            monster = Monster(*pos)
+            monster = Monster(*pos, self.player)
             self.all_monsters.add(monster)
 
     def setup(self):
 
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
+        self.spawn_monsters()
         """
         self.platforms = ...
         self.enemies = ...
         self.power_ups = ...
         """
+
 
 
     def run(self):
@@ -149,15 +163,49 @@ class Game:
 
 
     def update(self):
+        current_time = time.time()
+
         self.player.move()
         self.check_rect_collisions()
         self.check_ladder_collisions()
         self.handle_camera_movements()
 
 
-
-        self.all_monsters.update(self.dt)
         self.time_since_last_player_attack += 1
+
+        self.all_monsters.update(self.dt, self.player.rect.centerx)
+
+        for monster in self.all_monsters:
+            if self.player.rect.colliderect(monster.rect):
+                if monster.state != "attack":
+                    monster.state = "attack"
+                    monster.current_image = 0
+                    monster.time_since_last_update = 0
+
+            if self.player.rect.colliderect(monster.hitbox):
+                if current_time - self.hitbox_last_time >= self.hitbox_delay:
+                    self.player.hp -= 0.5
+                    self.hitbox_last_time = current_time
+
+    def display_lifebar(self):
+        full_hearts = math.floor(self.player.hp)
+        half_hearts = 0
+
+        if self.player.hp % 1 >= 0.5:
+            half_hearts = 1
+
+        total_hearts = full_hearts + half_hearts
+
+        empty_hearts = 5 - total_hearts
+
+        for i in range(full_hearts):
+            self.screen.blit(self.heart_full, (10 + i * 60, 10))
+
+        if half_hearts > 0:
+            self.screen.blit(self.heart_mid, (10 + full_hearts * 60, 10))
+
+        for i in range(empty_hearts):
+            self.screen.blit(self.heart_empty, (10 + (full_hearts + half_hearts + i) * 60, 10))
 
     def display(self):
 
@@ -193,6 +241,8 @@ class Game:
         self.chest.draw(self.camera_x, self.camera_y)
 
         self.player.draw(self.camera_x, self.camera_y)
+
+        self.display_lifebar()
 
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
