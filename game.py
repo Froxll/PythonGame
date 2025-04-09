@@ -48,7 +48,6 @@ class Game:
         self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
         self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
 
-
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
         self.rect_list = []
@@ -67,8 +66,6 @@ class Game:
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.spades_list.append(rect)
 
-
-
         # Caméra
         self.camera_x = 0
         self.camera_y = 0
@@ -78,8 +75,6 @@ class Game:
         self.hitbox_last_time = 0
         self.hitbox_delay = 2
         self.time_since_last_player_attack = 0
-
-
 
         self.end_screens_manager = None
 
@@ -108,11 +103,6 @@ class Game:
         for monster in self.all_monsters:
             self.monsters_rect_list.append(monster.rect)
         self.powerup_boots = Powerup(self.screen, self.player, "boots")
-        """
-        self.platforms = ...
-        self.enemies = ...
-        self.power_ups = ...
-        """
 
 
     def run(self):
@@ -355,5 +345,6 @@ class Game:
 
     def handle_chest_opening(self):
         collision_index = self.player.display_rect.colliderect(self.chest.display_rect)
-        if collision_index > -1:
+        print(collision_index)
+        if collision_index:
             self.chest.open()
