@@ -2,7 +2,7 @@
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="20" tilewidth="32" tileheight="32" infinite="1" nextlayerid="4" nextobjectid="97">
  <objectgroup id="3" name="Objets">
   <object id="2" name="plateforme" x="9.33333" y="223.333" width="649" height="102"/>
-  <object id="3" name="plateforme" x="10.25" y="-226.542" width="2" height="448.125"/>
+  <object id="3" name="plateforme" x="10.25" y="-416.042" width="2" height="637.625"/>
   <object id="4" name="plateforme" x="12.75" y="166.333" width="73.5" height="56"/>
   <object id="6" name="plateforme" x="43.75" y="134.583" width="41.5833" height="32"/>
   <object id="8" name="plateforme" x="627.334" y="223.333" width="30" height="570"/>

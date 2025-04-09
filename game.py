@@ -37,6 +37,7 @@ class Game:
         self.tiles = math.ceil(SCREEN_WIDTH / self.background.get_width()) + 1
         self.map = pygame.image.load("img/Map.png").convert_alpha()
 
+
         self.heart_full = pygame.image.load("img/Lifebar/Full_Heart.png")
         self.heart_mid = pygame.image.load("img/Lifebar/Mid_Heart.png")
         self.heart_empty = pygame.image.load("img/Lifebar/Empty_Heart.png")
@@ -45,6 +46,7 @@ class Game:
         self.heart_full = pygame.transform.scale(self.heart_full, heart_size)
         self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
         self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
+
 
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
@@ -64,6 +66,8 @@ class Game:
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.spades_list.append(rect)
 
+
+
         # Caméra
         self.camera_x = 0
         self.camera_y = 0
@@ -77,6 +81,7 @@ class Game:
 
 
         self.end_screens_manager = None
+
 
 
     def spawn_monsters(self):
@@ -96,7 +101,7 @@ class Game:
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
 
-        self.end_screens_manager = EndScreensManager(self.screen, self.chest)
+        self.end_screens_manager = EndScreensManager(self.screen, self.player)
 
         self.spawn_monsters()
         for monster in self.all_monsters:
@@ -154,6 +159,7 @@ class Game:
 
 
 
+
     def update(self):
         current_time = time.time()
 
@@ -162,6 +168,7 @@ class Game:
         self.check_ladder_collisions()
         self.handle_camera_movements()
 
+        self.all_monsters.update(self.dt, self.player.hit_box.centerx)
         self.time_since_last_player_attack += 1
 
         if self.player.hp <= 0:
@@ -179,6 +186,8 @@ class Game:
             if self.player.hit_box.colliderect(monster.hitbox) and monster.hp > 0:
                 if current_time - self.hitbox_last_time >= self.hitbox_delay:
                     self.player.hp -= 0.5
+                    if self.player.hp == 0:
+                        self.player.is_dead_by_golem = True
                     self.hitbox_last_time = current_time
 
     def display_lifebar(self):

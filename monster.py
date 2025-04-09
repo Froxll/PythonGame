@@ -82,6 +82,8 @@ class Monster(pygame.sprite.Sprite):
 
             if self.current_image == 11 and self.rect.colliderect(self.player.hit_box) and self.hp > 0:
                 self.player.hp -= 1
+                if self.player.hp == 0:
+                    self.player.is_dead_by_golem = True
 
             if player_position < self.rect.centerx:
                 self.facing_right = False
