@@ -65,6 +65,7 @@ class MainMenu:
         self.volume_button_press_time = 0
         self.volume_button_press_delay = 200  # en ms
 
+        # Initialisation des touches du clavier pour visualiser les contrôles
         self.d_1_img = pygame.image.load("img/MainMenu/Keyboard/D_1.png").convert_alpha()
         self.d_2_img = pygame.image.load("img/MainMenu/Keyboard/D_2.png").convert_alpha()
         self.d_button = Button(213, 585, self.d_1_img, "d_1", self.screen, False, 2)
@@ -92,9 +93,7 @@ class MainMenu:
         self.isRunning = True
 
     def run(self):
-
         while self.isRunning:
-
             if self.start_button.is_clicked:
                 mixer.music.set_volume(0.1)
                 return True
@@ -105,6 +104,7 @@ class MainMenu:
 
             self.handle_event()
 
+            # Gestion de l'animation du clic bouton "Volume"
             if self.volume_button_pressed:
                 if pygame.time.get_ticks() - self.volume_button_press_time >= self.volume_button_press_delay:
                     if self.volume_button.type_button == "vol_off":
@@ -124,6 +124,7 @@ class MainMenu:
         if abs(self.scroll) > self.background.get_width():
             self.scroll = 0
 
+        # Affichage et lancement des boutons du menu principal
         self.start_button.update()
         self.start_button.draw()
 
@@ -144,18 +145,22 @@ class MainMenu:
         self.space_button.update()
         self.space_button.draw()
 
+        # Affichage des logos (hors boutons)
         self.screen.blit(self.logo, self.rect_logo)
         self.screen.blit(self.controles_logo, self.rect_controles)
 
         pygame.display.flip()
 
+    # Fonction qui gère la gestion des événements dans le jeu
     def handle_event(self):
         for event in pygame.event.get():
+            # Pour quitter le jeu
             if event.type == pygame.QUIT:
                 self.isRunning = False
                 pygame.display.quit()
                 sys.exit()
 
+            # Pour le volume
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.volume_button.rect.collidepoint(pygame.mouse.get_pos()):
                     self.volume_button_pressed = True
@@ -171,6 +176,7 @@ class MainMenu:
                         mixer.music.set_volume(0.2)
                         self.volume_button.type_button = "vol_on"
 
+            # Pour le clavier
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     self.d_button.set_image(self.d_2_img)

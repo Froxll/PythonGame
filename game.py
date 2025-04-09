@@ -1,16 +1,20 @@
 import math
-import sys
 import pygame
 import pytmx
 import time
-from pygame import mixer
 from player import Player
 from monster import Monster
-from button import Button
 from chest import Chest
 from powerup import Powerup
 from EndScreensManager import EndScreensManager
 
+###################
+# Ressources
+#
+# Création de la carte (Graven) : https://youtu.be/ooITOxbYVTo?si=0szkXlG8d1do7ZWq
+###################
+
+# Paramètres de l'écran
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
@@ -51,11 +55,12 @@ class Game:
 
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
+        # Création des listes pour accueillir les Rects de Tiled
         self.rect_list = []
         self.ladder_list = []
         self.spikes_list = []
 
-        # Placement des rect de collision
+        # Placement des rect de collision à partir du fichier TMX
         for obj in tmx_data.objects:
             if obj.name == "plateforme":
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
@@ -78,9 +83,10 @@ class Game:
         self.time_since_last_player_attack = 0
         self.time_since_last_spike_hit = 0
 
+        # Paramètre qui accueille la classe qui gère les écrans de fins du jeu (Game Over, Win)
         self.end_screens_manager = None
 
-        # Sounds
+        # Initialisation des sons
         self.sound_sword = pygame.mixer.Sound("audio/Sounds/Sound_Sword.ogg")
         self.sound_sword.set_volume(0.5)
         self.sound_golem_dmg = pygame.mixer.Sound("audio/Sounds/Golem_Damage.ogg")
@@ -106,6 +112,7 @@ class Game:
         self.player = Player(self.screen)
         self.chest = Chest(self.screen)
 
+        # Initialisation de la classe de gestion des écrans de fins
         self.end_screens_manager = EndScreensManager(self.screen, self.player)
 
         self.spawn_monsters()
@@ -153,6 +160,7 @@ class Game:
                     self.is_game_over = True
                     self.player.hp = 0
 
+            # Récupération des codes pour la gestion du changement de scène
             state_end = self.end_screens_manager.handle_event(event)
             if state_end == "EXIT":
                 return "EXIT"
@@ -268,7 +276,7 @@ class Game:
         pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
         """
 
-        # Ecran GameOver
+        # Affichage des écrans "Game Over" ou "Win" en fonction de conditions
         if self.is_game_over:
             self.end_screens_manager.display_game_over()
         elif self.chest.is_open:
