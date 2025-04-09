@@ -15,10 +15,12 @@ def main_loop():
 
     menu = MainMenu(screen, clock)
     current_scene = "menu"
+    is_launched = False
 
     while True:
         if current_scene == "menu":
             state = menu.run()
+            is_launched = True
             if state:
                 current_scene = "game"
         elif current_scene == "game":
@@ -29,6 +31,15 @@ def main_loop():
                 break
             elif state == "RESTART":
                 continue
+            elif state == "HOME":
+                current_scene = "menu"
+                if is_launched:
+                    is_launched = False
+                    new_clock = pygame.time.Clock()
+                    menu = MainMenu(screen, new_clock)
+                continue
+
+
     pygame.quit()
 
 
