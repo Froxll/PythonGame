@@ -17,7 +17,7 @@ class Powerup:
         if type == "boots":
             self.original_y = 100
         else:
-            self.original_y = 1900
+            self.original_y = 1488
 
         if type == "boots": # Flemme de faire de l'héritage
             self.image = pygame.image.load("img/powerup/boots_powerup.png")
@@ -26,7 +26,7 @@ class Powerup:
         elif type == "heart":
             self.image = pygame.image.load("img/Lifebar/Full_Heart.png")
             self.rescale_images()
-            self.display_rect = self.image.get_rect(x=150, y=self.original_y)
+            self.display_rect = self.image.get_rect(x=2343, y=self.original_y)
 
 
     def draw(self, camera_x, camera_y):

@@ -247,11 +247,6 @@ class Game:
         self.display_lifebar()
         if self.powerup_boots is not None:
             self.powerup_boots.draw(self.camera_x, self.camera_y)
-            display_x = self.powerup_boots.display_rect.x - self.camera_x
-            display_y = self.powerup_boots.display_rect.y - self.camera_y
-            shifted_rect = pygame.Rect(display_x, display_y, self.powerup_boots.display_rect.width,self.powerup_boots.display_rect.height)
-            pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-
         if self.powerup_heart is not None:
             self.powerup_heart.draw(self.camera_x, self.camera_y)
 
