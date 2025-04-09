@@ -16,7 +16,7 @@ class Game:
     def __init__(self, window_size):
         # Initialisation Son Game Over
         mixer.init()
-        mixer.music.load('audio/Sound_Game_Over.mp3')
+        mixer.music.load('audio/tk78_maisNAN.mp3')
         mixer.music.set_volume(0.8)
         self.music_launched = False
 
