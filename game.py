@@ -58,6 +58,8 @@ class Game:
                 rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                 self.spades_list.append(rect)
 
+
+
         # Caméra
         self.camera_x = 0
         self.camera_y = 0
