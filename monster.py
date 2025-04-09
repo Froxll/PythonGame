@@ -8,6 +8,7 @@ class Monster(pygame.sprite.Sprite):
         super().__init__()
 
         self.player = player
+        self.hp = 4
 
         self.images_walking_normal = []
         self.images_walking_flipped = []
@@ -72,7 +73,7 @@ class Monster(pygame.sprite.Sprite):
             self.time_since_last_update = 0
             self.current_image += 1
 
-            if self.current_image == 11 and self.rect.colliderect(self.player.rect):
+            if self.current_image == 11 and self.rect.colliderect(self.player.hit_box):
                 self.player.hp -= 1
 
 

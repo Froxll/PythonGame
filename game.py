@@ -173,16 +173,16 @@ class Game:
 
         self.time_since_last_player_attack += 1
 
-        self.all_monsters.update(self.dt, self.player.rect.centerx)
+        self.all_monsters.update(self.dt, self.player.hit_box.centerx)
 
         for monster in self.all_monsters:
-            if self.player.rect.colliderect(monster.rect):
+            if self.player.hit_box.colliderect(monster.rect):
                 if monster.state != "attack":
                     monster.state = "attack"
                     monster.current_image = 0
                     monster.time_since_last_update = 0
 
-            if self.player.rect.colliderect(monster.hitbox):
+            if self.player.hit_box.colliderect(monster.hitbox):
                 if current_time - self.hitbox_last_time >= self.hitbox_delay:
                     self.player.hp -= 0.5
                     self.hitbox_last_time = current_time
@@ -233,7 +233,7 @@ class Game:
 
         for monster in self.all_monsters:
             # Décaler la position du monstre selon la position de la caméra
-            if monster.health > 0:
+            if monster.hp > 0:
                 display_x = monster.rect.x - self.camera_x
                 display_y = monster.rect.y - self.camera_y
                 self.screen.blit(monster.image, (display_x, display_y))
@@ -244,11 +244,12 @@ class Game:
 
         self.display_lifebar()
 
+        """
         display_x = self.player.display_rect.x - self.camera_x
         display_y = self.player.display_rect.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
         pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-        """
+        
         display_x = self.player.hit_box.x - self.camera_x
         display_y = self.player.hit_box.y - self.camera_y
         shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
