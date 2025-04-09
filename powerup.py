@@ -11,12 +11,12 @@ class Powerup:
         self.counter = 0
         self.animation_speed = 0.05
         self.animation_amplitude = 15
-        self.original_y = 1900
+        self.original_y = 100
 
         if type == "boots": # Flemme de faire de l'héritage
             self.image = pygame.image.load("img/powerup/boots_powerup.png")
             self.rescale_images()
-            self.display_rect = self.image.get_rect(x=200, y=self.original_y)
+            self.display_rect = self.image.get_rect(x=150, y=self.original_y)
 
         #elif type == "heart":
 

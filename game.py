@@ -140,8 +140,6 @@ class Game:
                 elif event.key == pygame.K_o:
                     self.is_game_over = True
                     self.player.hp = 0
-                elif event.key == pygame.K_a and self.player.hp > 0:
-                    self.handle_chest_opening()
 
             state_end = self.end_screens_manager.handle_event(event)
             if state_end == "EXIT":
@@ -160,6 +158,8 @@ class Game:
         self.check_rect_collisions()
         self.check_ladder_collisions()
         self.handle_camera_movements()
+        if self.powerup_boots is not None:
+            self.check_boots_powerup_collision()
 
         self.all_monsters.update(self.dt, self.player.hit_box.centerx)
         self.time_since_last_player_attack += 1
@@ -239,11 +239,12 @@ class Game:
         self.player.draw(self.camera_x, self.camera_y)
 
         self.display_lifebar()
-        self.powerup_boots.draw(self.camera_x, self.camera_y)
-        display_x = self.powerup_boots.display_rect.x - self.camera_x
-        display_y = self.powerup_boots.display_rect.y - self.camera_y
-        shifted_rect = pygame.Rect(display_x, display_y, self.powerup_boots.display_rect.width,self.powerup_boots.display_rect.height)
-        pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
+        if self.powerup_boots is not None:
+            self.powerup_boots.draw(self.camera_x, self.camera_y)
+            display_x = self.powerup_boots.display_rect.x - self.camera_x
+            display_y = self.powerup_boots.display_rect.y - self.camera_y
+            shifted_rect = pygame.Rect(display_x, display_y, self.powerup_boots.display_rect.width,self.powerup_boots.display_rect.height)
+            pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
 
 
         display_x = self.player.display_rect.x - self.camera_x
@@ -348,3 +349,9 @@ class Game:
         print(collision_index)
         if collision_index:
             self.chest.open()
+
+    def check_boots_powerup_collision(self):
+        collision = self.player.hit_box.colliderect(self.powerup_boots.display_rect)
+        if collision:
+            self.player.obtain_powerup("boots")
+            self.powerup_boots = None

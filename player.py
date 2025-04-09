@@ -18,8 +18,8 @@ class Player:
 
         #Variable de gestion de la position / Mouvement
         # self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228) # Position du perso à coté du coffre de fin
-        # self.display_rect = self.images["idle"][0].get_rect(x=200, y=180) # Position à côté du powerup boots
-        self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
+        self.display_rect = self.images["idle"][0].get_rect(x=900, y=150) # Position à côté du powerup boots
+        # self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
 
         self.hit_box = self.display_rect.copy()
         self.hit_box_reduction = 94
@@ -39,7 +39,7 @@ class Player:
         self.climb_speed = 5
 
         # Stats de jeu
-        self.hp = 5
+        self.hp = 50
         self.damage = 1
 
         # Gestion des animations
@@ -50,6 +50,7 @@ class Player:
         self.frame_per_animation = 6
         self.is_jumping = False
 
+        self.powerup_list = []
         self.is_dead_by_golem = False
 
     def move(self):
@@ -201,6 +202,24 @@ class Player:
         load_images_folder(self.images["idle"], "player/idle")
         load_images_folder(self.images["jump"], "player/jump")
         load_images_folder(self.images["run"], "player/run")
+
+    def obtain_powerup(self, name):
+        self.powerup_list.append(name)
+
+    def use_powerup(self, name):
+        if name in self.powerup_list:
+            self.powerup_list.remove(name)
+            if name == "boots":
+                self.jump_speed = 20
+                self.velocity = 9
+            elif name == "hearts":
+                if self.hp < 5:
+                    if self.hp <=4:
+                        self.hp += 1
+                    else:
+                        self.hp = 5
+
+
 
 def load_images_folder(images_list, path):
     folder_path = os.path.join("img/", path)
