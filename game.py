@@ -31,6 +31,7 @@ class Game:
         self.player = None  # Joueur
         self.chest = None  # Coffre
         self.powerup_boots = None
+        self.powerup_heart = None
 
         # Initialisation pour le background qui bouge
         self.background = pygame.image.load("img/Background.png").convert()
@@ -103,26 +104,27 @@ class Game:
         for monster in self.all_monsters:
             self.monsters_rect_list.append(monster.rect)
         self.powerup_boots = Powerup(self.screen, self.player, "boots")
+        self.powerup_heart = Powerup(self.screen, self.player, "heart")
 
 
     def run(self):
-        while self.isRunning:
-            # Structure du code : https://www.youtube.com/watch?v=N56R1V5XZBw&list=PLKeQQTikvsqkeJlhiE8mXwskOhXLKdl8m&index=3
-            # Gestion de l'évenement "Quit
-            state = self.handling_events()
-            if state == "EXIT":
-                return state
-            elif state == "RESTART":
-                return state
-            # Mise à jour des différents éléments
-            self.update()
+            while self.isRunning:
+                # Structure du code : https://www.youtube.com/watch?v=N56R1V5XZBw&list=PLKeQQTikvsqkeJlhiE8mXwskOhXLKdl8m&index=3
+                # Gestion de l'évenement "Quit
+                state = self.handling_events()
+                if state == "EXIT":
+                    return state
+                elif state == "RESTART":
+                    return state
+                # Mise à jour des différents éléments
+                self.update()
 
-            # Rendu des entités
-            self.display()
+                # Rendu des entités
+                self.display()
 
-            self.dt = self.clock.tick(60) / 1000
+                self.dt = self.clock.tick(60) / 1000
 
-        pygame.quit()
+            pygame.quit()
 
     def handling_events(self):
         for event in pygame.event.get():
@@ -158,8 +160,12 @@ class Game:
         self.check_rect_collisions()
         self.check_ladder_collisions()
         self.handle_camera_movements()
+
         if self.powerup_boots is not None:
             self.check_boots_powerup_collision()
+        if self.powerup_heart is not None:
+            self.check_heart_powerup_collision()
+
 
         self.all_monsters.update(self.dt, self.player.hit_box.centerx)
         self.time_since_last_player_attack += 1
@@ -245,6 +251,9 @@ class Game:
             display_y = self.powerup_boots.display_rect.y - self.camera_y
             shifted_rect = pygame.Rect(display_x, display_y, self.powerup_boots.display_rect.width,self.powerup_boots.display_rect.height)
             pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
+
+        if self.powerup_heart is not None:
+            self.powerup_heart.draw(self.camera_x, self.camera_y)
 
 
         display_x = self.player.display_rect.x - self.camera_x
@@ -346,7 +355,6 @@ class Game:
 
     def handle_chest_opening(self):
         collision_index = self.player.display_rect.colliderect(self.chest.display_rect)
-        print(collision_index)
         if collision_index:
             self.chest.open()
 
@@ -355,3 +363,9 @@ class Game:
         if collision:
             self.player.obtain_powerup("boots")
             self.powerup_boots = None
+
+    def check_heart_powerup_collision(self):
+        collision = self.player.hit_box.colliderect(self.powerup_heart.display_rect)
+        if collision:
+            self.player.obtain_powerup("heart")
+            self.powerup_heart = None
