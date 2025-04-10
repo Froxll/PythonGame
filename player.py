@@ -17,8 +17,6 @@ class Player:
         self.load_sprites()
 
         #Variable de gestion de la position / Mouvement
-        # self.display_rect = self.images["idle"][0].get_rect(x=5470, y=228) # Position du perso à coté du coffre de fin
-        # self.display_rect = self.images["idle"][0].get_rect(x=900, y=150) # Position à côté du powerup boots
         self.display_rect = self.images["idle"][0].get_rect(x=200, y=1970)
 
         self.hit_box = self.display_rect.copy()
@@ -56,6 +54,8 @@ class Player:
         self.inventory_boots = pygame.image.load("img/powerup/boots_powerup_inventory.png")
         inventory_boots_size = (47, 38)
         self.inventory_boots = pygame.transform.scale(self.inventory_boots, inventory_boots_size)
+        self.inventory_heart = pygame.image.load("img/Lifebar/Full_Heart.png")
+        self.inventory_heart = pygame.transform.scale(self.inventory_heart, inventory_boots_size)
 
     def move(self):
         if self.hp > 0:
@@ -212,15 +212,21 @@ class Player:
     def display_inventory_boots(self):
         self.screen.blit(self.inventory_boots, (581, 661))
 
+    def display_inventory_heart(self):
+        self.screen.blit(self.inventory_heart, (647, 661))
+
     def obtain_powerup(self, name):
         self.powerup_list.append(name)
-        self.display_inventory_boots()
+        if name == "heart":
+            if self.hp <= 4:
+                self.use_powerup("heart")
+
 
     def use_powerup(self, name):
         if name in self.powerup_list:
             self.powerup_list.remove(name)
             if name == "boots":
-                self.jump_speed = 20
+                self.jump_speed = 19
                 self.velocity = 9
             elif name == "heart":
                 if self.hp < 5:

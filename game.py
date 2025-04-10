@@ -159,10 +159,11 @@ class Game:
                 elif event.key == pygame.K_e and self.time_since_last_player_attack > self.player.frame_per_animation * len(self.player.images["attack"]) and 0 <= self.player.y_vel < 1 and self.player.hp > 0:
                     self.handle_player_attack()
                     self.handle_chest_opening()
-                # TEST
-                elif event.key == pygame.K_o:
-                    self.is_game_over = True
-                    self.player.hp = 0
+                elif event.key == pygame.K_1 and "boots" in self.player.powerup_list:
+                    self.player.use_powerup("boots")
+                elif event.key == pygame.K_2 and "heart" in self.player.powerup_list:
+                    self.player.use_powerup("heart")
+
 
             # Récupération des codes pour la gestion du changement de scène
             state_end = self.end_screens_manager.handle_event(event)
@@ -216,6 +217,7 @@ class Game:
                         self.player.is_dead_by_golem = True
                     self.hitbox_last_time = current_time
 
+
     def display_lifebar(self):
         full_hearts = math.floor(self.player.hp)
         half_hearts = 0
@@ -248,6 +250,7 @@ class Game:
         if abs(self.scroll) > self.background.get_width():
             self.scroll = 0
 
+        display
 
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
@@ -266,25 +269,17 @@ class Game:
 
         self.display_lifebar()
         self.display_inventory()
+
         if "boots" in self.player.powerup_list:
             self.player.display_inventory_boots()
+        if "heart" in self.player.powerup_list:
+            self.player.display_inventory_heart()
+
         if self.powerup_boots is not None:
             self.powerup_boots.draw(self.camera_x, self.camera_y)
         if self.powerup_heart is not None:
             self.powerup_heart.draw(self.camera_x, self.camera_y)
 
-
-        display_x = self.player.display_rect.x - self.camera_x
-        display_y = self.player.display_rect.y - self.camera_y
-        shifted_rect = pygame.Rect(display_x, display_y, self.player.display_rect.width, self.player.display_rect.height)
-        #pygame.draw.rect(self.screen, (0, 0, 255), shifted_rect, width=2)
-
-        """
-        display_x = self.player.hit_box.x - self.camera_x
-        display_y = self.player.hit_box.y - self.camera_y
-        shifted_rect = pygame.Rect(display_x, display_y, self.player.hit_box.width,self.player.hit_box.height)
-        pygame.draw.rect(self.screen, (255, 0, 255), shifted_rect, width=2)
-        """
 
         # Affichage des écrans "Game Over" ou "Win" en fonction de conditions
         if self.is_game_over:
