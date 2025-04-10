@@ -188,6 +188,8 @@ class Game:
         self.check_spike_collision()
         self.handle_camera_movements()
 
+
+
         if self.powerup_boots is not None:
             self.check_boots_powerup_collision()
         if self.powerup_heart is not None:
@@ -250,7 +252,9 @@ class Game:
         if abs(self.scroll) > self.background.get_width():
             self.scroll = 0
 
-        display
+        for rect in self.rect_list:
+            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
+            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=2)
 
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 
@@ -346,7 +350,7 @@ class Game:
         self.camera_y = self.player.display_rect.y - self.window_size_h / 2 + self.player.display_rect.height / 2
         if self.camera_x < 0:
             self.camera_x = 0
-
+        
         if self.camera_y < 0:
             self.camera_y = 0
 
