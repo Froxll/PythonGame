@@ -114,7 +114,7 @@ class EndScreensManager:
         if not self.music_win:
             self.music_win = True
             mixer.music.load('audio/EndMusic.mp3')
-            mixer.music.set_volume(0.4)
+            mixer.music.set_volume(0.25)
             mixer.music.play()
 
         # Gestion de l'animation du bouton "Home"

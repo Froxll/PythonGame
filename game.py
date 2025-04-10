@@ -98,6 +98,11 @@ class Game:
         self.sound_golem_death = pygame.mixer.Sound("audio/Sounds/Golem_Death.ogg")
         self.sound_golem_death.set_volume(0.5)
 
+        self.vol_on = pygame.image.load("img/MainMenu/volume/Volume_On.png").convert_alpha()
+        self.vol_on_pressed = pygame.image.load("img/MainMenu/volume/Volume_On_Pressed.png").convert_alpha()
+        self.vol_off = pygame.image.load("img/MainMenu/volume/Volume_Off.png").convert_alpha()
+        self.vol_off_pressed = pygame.image.load("img/MainMenu/volume/Volume_Off_Pressed.png").convert_alpha()
+
 
     def spawn_monsters(self):
         golem_positions = [
@@ -220,6 +225,8 @@ class Game:
                     self.hitbox_last_time = current_time
 
 
+
+
     def display_lifebar(self):
         full_hearts = math.floor(self.player.hp)
         half_hearts = 0
@@ -251,10 +258,6 @@ class Game:
         self.scroll -= 0.5
         if abs(self.scroll) > self.background.get_width():
             self.scroll = 0
-
-        for rect in self.rect_list:
-            shifted_rect = rect.move(-self.camera_x, -self.camera_y)
-            pygame.draw.rect(self.screen, (255, 0, 0), shifted_rect, width=2)
 
         self.screen.blit(self.map, (-self.camera_x, -self.camera_y))
 

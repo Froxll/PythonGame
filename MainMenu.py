@@ -41,6 +41,12 @@ class MainMenu:
         self.rect_controles = self.controles_logo.get_rect()
         self.rect_controles.topleft = (80,475)
 
+        # Initialisation du titre "Attaquer"
+        self.attaquer_logo = pygame.image.load('img/MainMenu/Attaquer.png').convert_alpha()
+        self.attaquer_logo = pygame.transform.smoothscale(self.attaquer_logo, (int(self.attaquer_logo.get_width() * 0.2), int(self.attaquer_logo.get_height() * 0.2)))
+        self.rect_attaquer = self.attaquer_logo.get_rect()
+        self.rect_attaquer.topleft = (1000, 460)
+
         # Initialisation pour le background qui bouge
         self.background = pygame.image.load("img/MainMenu/Main_menu.png").convert()
         self.scroll = 0
@@ -85,6 +91,10 @@ class MainMenu:
         self.space_1_img = pygame.image.load("img/MainMenu/Keyboard/SPACE_1.png").convert_alpha()
         self.space_2_img = pygame.image.load("img/MainMenu/Keyboard/SPACE_2.png").convert_alpha()
         self.space_button = Button(175, 620, self.space_1_img, "space_1", self.screen, False, 1.5)
+
+        self.e_1_img = pygame.image.load("img/MainMenu/Keyboard/E_1.png").convert_alpha()
+        self.e_2_img = pygame.image.load("img/MainMenu/Keyboard/E_2.png").convert_alpha()
+        self.e_button = Button(1095, 550, self.e_1_img, "e_1", self.screen, False, 1.5)
 
 
         # Lancement de la musique
@@ -144,10 +154,13 @@ class MainMenu:
         self.s_button.draw()
         self.space_button.update()
         self.space_button.draw()
+        self.e_button.update()
+        self.e_button.draw()
 
         # Affichage des logos (hors boutons)
         self.screen.blit(self.logo, self.rect_logo)
         self.screen.blit(self.controles_logo, self.rect_controles)
+        self.screen.blit(self.attaquer_logo, self.rect_attaquer)
 
         pygame.display.flip()
 
@@ -188,6 +201,8 @@ class MainMenu:
                     self.z_button.set_image(self.z_2_img)
                 if event.key == pygame.K_SPACE:
                     self.space_button.set_image(self.space_2_img)
+                if event.key == pygame.K_e:
+                    self.e_button.set_image(self.e_2_img)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_d:
@@ -200,6 +215,8 @@ class MainMenu:
                     self.z_button.set_image(self.z_1_img)
                 if event.key == pygame.K_SPACE:
                     self.space_button.set_image(self.space_1_img)
+                if event.key == pygame.K_e:
+                    self.e_button.set_image(self.e_1_img)
 
 
 
