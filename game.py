@@ -53,6 +53,10 @@ class Game:
         self.heart_mid = pygame.transform.scale(self.heart_mid, heart_size)
         self.heart_empty = pygame.transform.scale(self.heart_empty, heart_size)
 
+        self.inventory = pygame.image.load("img/powerup/inventory.png")
+        inventory_size = (159, 81)
+        self.inventory = pygame.transform.scale(self.inventory, inventory_size)
+
         tmx_data = pytmx.load_pygame("data/MapTMX.tmx")
 
         # Création des listes pour accueillir les Rects de Tiled
@@ -232,6 +236,9 @@ class Game:
         for i in range(empty_hearts):
             self.screen.blit(self.heart_empty, (10 + (full_hearts + half_hearts + i) * 60, 10))
 
+    def display_inventory(self):
+        self.screen.blit(self.inventory, (560, 641))
+
     def display(self):
 
         # Boucle qui gère le background qui bouge
@@ -258,6 +265,9 @@ class Game:
         self.player.draw(self.camera_x, self.camera_y)
 
         self.display_lifebar()
+        self.display_inventory()
+        if "boots" in self.player.powerup_list:
+            self.player.display_inventory_boots()
         if self.powerup_boots is not None:
             self.powerup_boots.draw(self.camera_x, self.camera_y)
         if self.powerup_heart is not None:

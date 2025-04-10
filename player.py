@@ -53,6 +53,10 @@ class Player:
         self.powerup_list = []
         self.is_dead_by_golem = False
 
+        self.inventory_boots = pygame.image.load("img/powerup/boots_powerup_inventory.png")
+        inventory_boots_size = (47, 38)
+        self.inventory_boots = pygame.transform.scale(self.inventory_boots, inventory_boots_size)
+
     def move(self):
         if self.hp > 0:
             self.y_vel += min(1, self.fall_count / 60)
@@ -205,8 +209,12 @@ class Player:
         load_images_folder(self.images["jump"], "player/jump")
         load_images_folder(self.images["run"], "player/run")
 
+    def display_inventory_boots(self):
+        self.screen.blit(self.inventory_boots, (581, 661))
+
     def obtain_powerup(self, name):
         self.powerup_list.append(name)
+        self.display_inventory_boots()
 
     def use_powerup(self, name):
         if name in self.powerup_list:
