@@ -226,7 +226,7 @@ class Player:
         if name in self.powerup_list:
             self.powerup_list.remove(name)
             if name == "boots":
-                self.jump_speed = 19
+                self.jump_speed = 20
                 self.velocity = 9
             elif name == "heart":
                 if self.hp < 5:

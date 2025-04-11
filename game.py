@@ -351,11 +351,13 @@ class Game:
 
         self.camera_x = self.player.display_rect.x - self.window_size_w / 2 + self.player.display_rect.width / 2
         self.camera_y = self.player.display_rect.y - self.window_size_h / 2 + self.player.display_rect.height / 2
+
         if self.camera_x < 0:
             self.camera_x = 0
         
         if self.camera_y < 0:
             self.camera_y = 0
+
 
         if self.camera_x + self.window_size_w >= env_width:
             self.camera_x = env_width - self.window_size_w

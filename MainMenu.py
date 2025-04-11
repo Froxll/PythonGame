@@ -105,7 +105,7 @@ class MainMenu:
     def run(self):
         while self.isRunning:
             if self.start_button.is_clicked:
-                mixer.music.set_volume(0.1)
+                mixer.music.set_volume(0.2)
                 return True
 
             self.clock.tick(FPS)
